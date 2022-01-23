@@ -48,5 +48,6 @@ jobs:
         env:
           bot_id: $${{ secrets.bot_id }}
           chat_id: $${{ secrets.chat_id }}
+          test_secret: $${{ secrets.test_secret }}
         run: |
           python main.py
