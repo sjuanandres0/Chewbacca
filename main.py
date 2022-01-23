@@ -17,7 +17,7 @@ for ticker_lookup in ticker_list:
     hist = ticker.history(period="max")
     #print(hist)
     #hist.to_csv('hist_'+ticker_lookup+'.csv')
-    (hist['Close'].pct_change()*100).iloc[-1]
-    message = 'Daily Pct change for {0:,.2f}'.format(ticker_lookup)
+    pct_change = (hist['Close'].pct_change()*100).iloc[-1]
+    message = "{} Daily Pct change is {:,.2f}".format(ticker_lookup, pct_change)
     api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
     requests.get(api_url)
