@@ -46,8 +46,8 @@ jobs:
       
       - name: Running main.py
         env:
-          bot_id: $${{ secrets.bot_id }}
-          chat_id: $${{ secrets.chat_id }}
-          test_secret: $${{ secrets.test_secret }}
+          bot_id: $${{ secrets.BOT_ID }}
+          chat_id: $${{ secrets.CHAT_ID }}
+          test_secret: $${{ secrets.TEST_SECRET }}
         run: |
           python main.py
