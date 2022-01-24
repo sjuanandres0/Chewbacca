@@ -5,10 +5,10 @@ name: CI - Chewie Job1
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  #push:
+  #  branches: [ main ]
+  #pull_request:
+  #  branches: [ main ]
   schedule:
     - cron: '45 10 * * *'
 
@@ -28,14 +28,14 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo "Hello World, I'm Chewie!"
+      #- name: Run a one-line script
+      #  run: echo "Hello World, I'm Chewie!"
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      #- name: Run a multi-line script
+      #  run: |
+      #    echo Add other actions to build,
+      #    echo test, and deploy your project.
           
       - name: Installing Python
         uses: actions/setup-python@v2
