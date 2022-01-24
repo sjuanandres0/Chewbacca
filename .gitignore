@@ -1,2 +1,7 @@
 drafts/
 config/
+
+venv
+*.pyc
+.DS_Store
+.env
