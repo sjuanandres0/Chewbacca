@@ -46,3 +46,4 @@ wincertstore==0.2
 zope.interface==5.4.0
 yfinance==0.1.69
 plotly==5.5.0
+gunicorn==20.0.4
