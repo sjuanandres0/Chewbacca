@@ -22,4 +22,5 @@ for ticker_lookup in ticker_list:
     pct_change = (hist['Close'].pct_change()*100).iloc[-1]
     message = "{} Daily Pct change is {:,.2f}".format(ticker_lookup, pct_change)
 
-base.to_csv('Chewbacca/ticker_data.csv', index=False)
+#base.to_csv('Chewbacca/ticker_data.csv', index=False)
+base.to_csv('ticker_data.csv', index=False)
