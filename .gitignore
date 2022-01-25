@@ -1,6 +1,8 @@
 drafts/
 config/
 
+app2.py
+requirements2.txt
 venv
 *.pyc
 .DS_Store
