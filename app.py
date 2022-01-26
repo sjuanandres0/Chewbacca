@@ -7,6 +7,8 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 
+logo_link = 'https://www.nicepng.com/png/detail/163-1637042_vector-free-chewbacca-vector-head-chewbacca.png'
+logo_link = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBqOjxj2ccsPVGyMuVBgqRZCSzDn_Uh7E9OljlQzbpgdV8BlrRrbbxsENV7zZpj_QmULo&usqp=CAU'
 #df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
 df = pd.read_csv('ticker_data.csv', index_col='Date', parse_dates=True)
 tickers = df.ticker.unique()
@@ -15,8 +17,26 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
-app.layout = html.Div([
-    html.H2("Hello Galaxy, I'm Chewbacca 🤓🚀📈"),
+app.layout = html.Div(children=[
+    html.Div(children=[
+        html.H2("Hi Galaxy, I'm Chewie!", style={
+            #'margin':'30px'
+            'padding':'30px'
+            #,'border':'3px dotted lightblue'
+            ,'background-color':'black'
+            ,'color':'white'
+            ,'display':'inline-block'
+            #,'textAlign': 'center'
+            }),
+        html.Img(src=logo_link, style={
+            'display':'inline-block' 
+            #,'margin':'25px', 
+            ,'height':'100px'
+            ,'width':'100px'
+            ,'border':'2px solid black'
+            ,'textAlign': 'right'
+            })
+    ]),
 #    dcc.Checklist(
 #        id='toggle-rangeslider',
 #        options=[{'label': 'Include Rangeslider', 
