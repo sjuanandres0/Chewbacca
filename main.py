@@ -20,9 +20,11 @@ for ticker_lookup in ticker_list:
     hist['ticker'] = ticker_lookup
     base = base.append(hist, ignore_index=True)
     pct_change = (hist['Close'].pct_change()*100).iloc[-1]
-    message = "{}=Daily_Pct_change={:,.2f}".format(ticker_lookup, pct_change)
-    api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
-    requests.get(api_url)
+    
+    if ticker_lookup == 'BTC-USD':
+        message = "{} : Daily_Pct_change : {:,.2f}".format(ticker_lookup, pct_change)
+        api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
+        requests.get(api_url)
 
 #base.to_csv('Chewbacca/ticker_data.csv', index=False)
 base.to_csv('ticker_data.csv', index=False)
