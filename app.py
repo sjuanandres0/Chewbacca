@@ -23,10 +23,10 @@ app.layout = html.Div(children=[
     html.Div(children=[
         html.H2("Hi Galaxy, I'm Chewie!", style={
             #'margin':'30px'
-            #'padding':'30px'
+            'padding':'0px 20px 0px 20px'
             #,'border':'3px dotted lightblue'
             #,'background-color':'black'
-            'color':'white'
+            ,'color':'white'
             ,'display':'inline-block'
             #,'textAlign': 'center'
             }),
@@ -38,22 +38,22 @@ app.layout = html.Div(children=[
             #,'border':'2px solid black'
             #,'textAlign': 'right'
             })
-    ], style={'color':'black','background-color':'black'}),
-    dcc.Checklist(
+    ], style={'color':'black','background-color':'black'})
+    ,dcc.Checklist(
         id='toggle-rangeslider',
         options=[{'label': 'Include Rangeslider', 
                   'value': 'slider'}],
         value=['slider']
         #, style={'color':'white'}
         #, style={'display':'inline-block'}
-    ),
-    dcc.Dropdown(
+    )
+    ,dcc.Dropdown(
         id='dropdown',
         options=[{'label': i, 'value': i} for i in tickers],
         value='BTC-USD'
         #, style={'display':'inline-block'}
-    ),
-    dcc.Graph(id="my_graph"
+    )
+    ,dcc.Graph(id="my_graph"
         #, style={'display':'inline-block'}
     ),
 ]
