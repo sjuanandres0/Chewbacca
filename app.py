@@ -16,61 +16,69 @@ tickers = df.ticker.unique()
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+#app = dash.Dash(__name__)
 server = app.server
 
 app.layout = html.Div(children=[
     html.Div(children=[
         html.H2("Hi Galaxy, I'm Chewie!", style={
             #'margin':'30px'
-            'padding':'30px'
+            #'padding':'30px'
             #,'border':'3px dotted lightblue'
-            ,'background-color':'black'
-            ,'color':'white'
+            #,'background-color':'black'
+            'color':'white'
             ,'display':'inline-block'
             #,'textAlign': 'center'
             }),
         html.Img(src=logo_link, style={
             'display':'inline-block' 
-            #,'margin':'25px', 
+            ,'margin':'25px' 
             ,'height':'100px'
-            ,'width':'100px'
-            ,'border':'2px solid black'
-            ,'textAlign': 'right'
+            #,'width':'100px'
+            #,'border':'2px solid black'
+            #,'textAlign': 'right'
             })
-    ]),
-#    dcc.Checklist(
-#        id='toggle-rangeslider',
-#        options=[{'label': 'Include Rangeslider', 
-#                  'value': 'slider'}],
-#        value=['slider']
-#    ),
+    ], style={'color':'black','background-color':'black'}),
+    dcc.Checklist(
+        id='toggle-rangeslider',
+        options=[{'label': 'Include Rangeslider', 
+                  'value': 'slider'}],
+        value=['slider']
+        #, style={'color':'white'}
+        #, style={'display':'inline-block'}
+    ),
     dcc.Dropdown(
         id='dropdown',
         options=[{'label': i, 'value': i} for i in tickers],
         value='BTC-USD'
+        #, style={'display':'inline-block'}
     ),
-    dcc.Graph(id="my_graph"),
-])
+    dcc.Graph(id="my_graph"
+        #, style={'display':'inline-block'}
+    ),
+]
+#    , style={'margin':'0 auto','background-color':'black'}
+)
 
 @app.callback(
     Output("my_graph", "figure"), 
-#    [Input("toggle-rangeslider", "value"),
-#    Input("dropdown","value")])
-    Input("dropdown","value"))
+    [Input("toggle-rangeslider", "value"),
+    Input("dropdown","value")])
 
-def display_candlestick(value):
-    df_plot = df.copy(deep=True)#[df["ticker"]==lookup_ticker]
-    df_plot = df_plot[df_plot['ticker']==value]
+def display_candlestick(value_range_slider, ticker_dropdown):
+    df_plot = df.copy(deep=True)
+    df_plot = df_plot[df_plot['ticker']==ticker_dropdown]
     fig = go.Figure(go.Candlestick(
-        x=df_plot.index,#['Date'],
-        open=df_plot.Open,#['AAPL.Open'],
-        high=df_plot.High,#['AAPL.High'],
-        low=df_plot.Low,#['AAPL.Low'],
-        close=df_plot.Close#['AAPL.Close']
+        x=df_plot.index,
+        open=df_plot.Open,
+        high=df_plot.High,
+        low=df_plot.Low,
+        close=df_plot.Close
     ))
- #   fig.update_layout(
- #       xaxis_rangeslider_visible='slider' in value
- #   )
+    fig.update_layout(
+        title = ticker_dropdown + ' historic OHLC'
+        , xaxis_rangeslider_visible='slider' in value_range_slider
+    )
     return fig
 
 if __name__ == '__main__':
