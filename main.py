@@ -31,5 +31,6 @@ for ticker_lookup in ticker_list:
         api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
         requests.get(api_url)
 
+#base_old = pd.read('ticker_data.csv')
 #base.to_csv('Chewbacca/ticker_data.csv', index=False)
 base.to_csv('ticker_data.csv', index=False)

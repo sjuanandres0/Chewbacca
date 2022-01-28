@@ -21,22 +21,25 @@ server = app.server
 
 app.layout = html.Div(children=[
     html.Div(children=[
-        html.H2("Hi Galaxy, I'm Chewie!", style={
-            #'margin':'30px'
-            'padding':'0px 20px 0px 20px'
-            #,'border':'3px dotted lightblue'
+        html.Img(src=logo_link, style={
+            'display':'inline-block' 
+            ,'margin':'0px 0px 0px 0px' 
+            ,'height':'50px'
+            #,'width':'100px'
+            ,'border':'2px solid white'
+            #,'textAlign': 'right'
+            })
+        ,html.H4("Hi Galaxy, I'm Chewie!", style={
+            'margin':'0px'
+            ,'padding':'10px 20px 0px 20px'
+            #,'height':'100px'
+            ,'border':'3px dotted lightblue'
             #,'background-color':'black'
             ,'color':'white'
             ,'display':'inline-block'
-            #,'textAlign': 'center'
-            }),
-        html.Img(src=logo_link, style={
-            'display':'inline-block' 
-            ,'margin':'25px' 
-            ,'height':'100px'
-            #,'width':'100px'
-            #,'border':'2px solid black'
-            #,'textAlign': 'right'
+            ,'text-align': 'center'
+            #,'width': '100%', 'display': 'flex', 'align-items': 'center', 
+            ,'justify-content': 'center'
             })
     ], style={'color':'black','background-color':'black'})
     ,dcc.Checklist(
