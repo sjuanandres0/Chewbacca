@@ -2,24 +2,29 @@ import os
 import requests
 import yfinance as yf
 import pandas as pd
+import chewie_variables as ch_var
+import datetime
+
+start_tmsp = datetime.datetime.now()
 
 bot_id = os.environ.get('bot_id')
 chat_id = os.environ.get('chat_id')
+machine = 'server'
 if bot_id == None:
     import config.cred as cred
     bot_id = cred.bot_id
     chat_id = cred.chat_id
+    machine = 'laptop'
 
 #message = 'test_message'
-message = 'Check: https://chewbacca22.herokuapp.com/'
-api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
-requests.get(api_url)
+#message = 'Running Main...'#\nCheck: {}'.format(chewie_url)
+#api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
+#requests.get(api_url)
 
 base = pd.DataFrame(columns=['Date','Open', 'High', 'Low', 'Close', 'Volume', 'Dividends', 'Stock Splits', 'ticker'])
-ticker_list = ['BTC-USD','ETH-USD','MSFT','TSLA','GOOG','AAPL']
+ticker_list = ch_var.ticker_list #['BTC-USD','ETH-USD','MSFT','TSLA','GOOG','AAPL']
 for ticker_lookup in ticker_list:
     ticker = yf.Ticker(ticker_lookup)
-    #print(ticker.info)
     # get historical market data
     hist = ticker.history(period="max").reset_index()
     hist['ticker'] = ticker_lookup
@@ -34,3 +39,9 @@ for ticker_lookup in ticker_list:
 #base_old = pd.read('ticker_data.csv')
 #base.to_csv('Chewbacca/ticker_data.csv', index=False)
 base.to_csv('ticker_data.csv', index=False)
+
+end_tmsp = datetime.datetime.now()
+elapsed_sec = (end_tmsp - start_tmsp).seconds
+message = 'Run completed.\nMachine: {}.\nElapsed time: {} seconds.\nCheck: {}'.format(machine, elapsed_sec, ch_var.chewie_url)
+api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
+requests.get(api_url)

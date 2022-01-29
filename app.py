@@ -14,9 +14,9 @@ logo_link = 'https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/img
 df = pd.read_csv('ticker_data.csv', index_col='Date', parse_dates=True)
 tickers = df.ticker.unique()
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-#app = dash.Dash(__name__)
+#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+#app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__)
 server = app.server
 
 app.layout = html.Div(children=[
@@ -29,7 +29,7 @@ app.layout = html.Div(children=[
             ,'border':'2px solid white'
             #,'textAlign': 'right'
             })
-        ,html.H4("Hi Galaxy, I'm Chewie!", style={
+        ,html.H1("Hi Galaxy, I'm Chewie!", style={
             'margin':'0px'
             ,'padding':'10px 20px 0px 20px'
             #,'height':'100px'
