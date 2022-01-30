@@ -48,4 +48,4 @@ yfinance==0.1.69
 plotly==5.5.0
 gunicorn==20.0.4
 dash==2.0.0
-TA-Lib==0.4.24
+TA-Lib
