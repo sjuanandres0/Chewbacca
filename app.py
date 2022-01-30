@@ -8,6 +8,8 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 import datetime
+import dash_table
+from dash_table import DataTable, FormatTemplate
 
 today = datetime.date.today()
 yesterday = today - datetime.timedelta(days=1)
@@ -20,6 +22,11 @@ logo_link = 'https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/img
 df = pd.read_csv('ticker_data.csv', index_col='Date', parse_dates=True)
 df = df[df.index.year>=2000]
 tickers = df.ticker.unique()
+
+#d_columns = df.columns
+d_columns = ['Date','Close','sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']
+d_columns = [{'name':x, 'id':x} for x in d_columns if x not in ['as','asd']]
+#d_table = 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -86,7 +93,19 @@ app.layout = html.Div(children=[
         )
         ,dcc.Graph(id="pct_change_graph"
         )
+        ,DataTable(
+            id = 'datatable-signals',
+            columns=d_columns,
+            data=df.to_dict('records'),
+            cell_selectable=False,
+  			sort_action='native',
+            filter_action='native',
+            page_action='native',
+            page_current= 0,
+            page_size= 10,
+            )
     ], style={'display':'inline-block', 'padding':'10px','width': '85%'})
+    #,html.Div(d_table, style={'width':'1000px', 'height':'350px', 'margin':'10px auto', 'padding-right':'30px'})
     ,html.P("Report updated: {}".format(today), style={
         'color':'white'
         #,'display':'inline-block'
@@ -139,8 +158,18 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
         ,font={'color':'orange'}
         ,xaxis={'showgrid':False}
         )
-
     return fig_candle, fig_pct_change
+
+@app.callback(
+    Output('datatable-signals', 'data'),
+    Input("dropdown-ticker", "value"))
+def update_table(ticker_dropdown):
+    df_copy = df.copy(deep=True)
+    df_copy = df_copy[df_copy['ticker']==ticker_dropdown].sort_index(ascending=False).reset_index()[['Date','Close','sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']]
+    #df_copy['Date'] = datetime.date(df_copy['Date'])
+    return df_copy.to_dict('records')
+    #dff = df
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
