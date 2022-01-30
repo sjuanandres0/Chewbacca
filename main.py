@@ -1,9 +1,11 @@
 import os
+import pandas as pd
+import numpy as np
 import requests
 import yfinance as yf
-import pandas as pd
 import chewie_variables as ch_var
 from datetime import datetime
+import talib
 
 start_tmsp = datetime.now()
 
@@ -29,6 +31,21 @@ for ticker_lookup in ticker_list:
     # hist = ticker.history(period="max").reset_index()
     hist = ticker.history(start='2000-01-01').reset_index()
     hist['pct_change'] = (hist['Close'].pct_change()*100)
+    hist['SMA_10'] = talib.SMA(hist['Close'], timeperiod=10)
+    hist['SMA_50'] = talib.SMA(hist['Close'], timeperiod=50)
+    hist['EMA_10'] = talib.EMA(hist['Close'], timeperiod=10)
+    hist['EMA_50'] = talib.EMA(hist['Close'], timeperiod=50)
+    hist['RSI_10'] = talib.RSI(hist['Close'], timeperiod=10)
+    hist['RSI_50'] = talib.RSI(hist['Close'], timeperiod=50)
+    hist['BB_10_upper'], hist['BB_10_middle'], hist['BB_10_lower'] = talib.BBANDS(hist['Close'], 
+        nbdevup=2,
+        nbdevdn=2,
+        timeperiod=10)
+    hist['BB_50_upper'], hist['BB_50_middle'], hist['BB_50_lower'] = talib.BBANDS(hist['Close'], 
+        nbdevup=2,
+        nbdevdn=2,
+        timeperiod=50)
+
     hist['ticker'] = ticker_lookup
     base = base.append(hist, ignore_index=True)
     pct_change = (hist['Close'].pct_change()*100).iloc[-1]
