@@ -66,9 +66,10 @@ for ticker_lookup in ticker_list:
     # Send msg if at least 1 indicator is not hold
     indicators = ['sg_RSI_10', 'sg_RSI_50', 'sg_BB_10', 'sg_BB_50']
     not_hold = (hist[indicators].iloc[-1] != 'hold').any() 
-    if not_hold: #ticker_lookup == 'BTC-USD':
-        message = "{}\nDaily_Pct_change {:,.2f}\nsg_RSI_10 {}\nsg_RSI_50 {}\nsg_BB_10 {}\nsg_BB_50 {}".format(ticker_lookup, pct_change, hist['sg_RSI_10'].iloc[-1], hist['sg_RSI_50'].iloc[-1], hist['sg_BB_10'].iloc[-1], hist['sg_BB_50'].iloc[-1])
-        api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
+    if not_hold: 
+    #if ticker_lookup == 'BTC-USD':
+        message = '<b>{}</b>\nDaily_Pct_change {:,.2f}\nsg_RSI_10 {}\nsg_RSI_50 {}\nsg_BB_10 {}\nsg_BB_50 {}'.format(ticker_lookup, pct_change, hist['sg_RSI_10'].iloc[-1], hist['sg_RSI_50'].iloc[-1], hist['sg_BB_10'].iloc[-1], hist['sg_BB_50'].iloc[-1])
+        api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
         requests.get(api_url)
 
 
@@ -81,8 +82,8 @@ total_tickers = len(ticker_list)
 total_rows = len(base)
 end_tmsp = datetime.now()
 elapsed_sec = (end_tmsp - start_tmsp).seconds
-message = 'Run completed.\nMachine: {}.\nElapsed time: {} seconds.\nTotal tickers: {}.\nTotal rows: {}.\nCheck: {}'.format(machine, elapsed_sec, total_tickers, total_rows, ch_var.chewie_url)
-api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
+message = 'Ran_{}\nElapsed_{}_secs\n{}_tickers\n{}_rows\n<a href="{}">Dashboard</a>'.format(machine, elapsed_sec, total_tickers, total_rows, ch_var.chewie_url)
+api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
 requests.get(api_url)
 
 # End
