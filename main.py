@@ -63,7 +63,10 @@ for ticker_lookup in ticker_list:
     base = base.append(hist, ignore_index=True)
     pct_change = (hist['Close'].pct_change()*100).iloc[-1]
     
-    if ticker_lookup == 'BTC-USD':
+    # Send msg if at least 1 indicator is not hold
+    indicators = ['sg_RSI_10', 'sg_RSI_50', 'sg_BB_10', 'sg_BB_50']
+    not_hold = (hist[indicators].iloc[-1] != 'hold').any() 
+    if not_hold: #ticker_lookup == 'BTC-USD':
         message = "{}\nDaily_Pct_change {:,.2f}\nsg_RSI_10 {}\nsg_RSI_50 {}\nsg_BB_10 {}\nsg_BB_50 {}".format(ticker_lookup, pct_change, hist['sg_RSI_10'].iloc[-1], hist['sg_RSI_50'].iloc[-1], hist['sg_BB_10'].iloc[-1], hist['sg_BB_50'].iloc[-1])
         api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.format(bot_id, chat_id, message)
         requests.get(api_url)
