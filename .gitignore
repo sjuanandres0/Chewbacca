@@ -1,10 +1,10 @@
+test_bot.py
 drafts/
 config/
 DC_Financial_Trading_in_Python/
 DC_Building_Dashboards_with_Dash_and_Plotly/
 app2.py
 requirements2.txt
-test_bot.py
 venv
 *.pyc
 .DS_Store

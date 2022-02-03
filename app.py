@@ -20,7 +20,7 @@ old_today = today - datetime.timedelta(days=120)
 logo_link = 'https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/img/Chewie.png'
 #df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
 df = pd.read_csv('ticker_data.csv', index_col='Date', parse_dates=True)
-df = df[df.index.year>=2000]
+df = df[df.index.year>=2010]
 tickers = df.ticker.unique()
 
 #d_columns = df.columns

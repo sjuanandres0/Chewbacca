@@ -69,7 +69,16 @@ for ticker_lookup in ticker_list:
     if not_hold: 
     #if ticker_lookup == 'BTC-USD':
         cnt += 1
-        message = '{}. <b>{}</b>\nDaily_Pct_change  <code>{:,.2f}</code>\nsg_RSI_10 {}\nsg_RSI_50 {}\nsg_BB_10 {}\nsg_BB_50 {}'.format(cnt, ticker_lookup, pct_change, hist['sg_RSI_10'].iloc[-1], hist['sg_RSI_50'].iloc[-1], hist['sg_BB_10'].iloc[-1], hist['sg_BB_50'].iloc[-1])
+        up_down_symbol = ['📉' if pct_change<0 else '📈'][0]
+        # Consider doing a for each indicator
+        for i,indicator in enumerate(indicators):
+            indicators[i] = hist[indicator].iloc[-1]
+            indicators[i] = indicators[i] + [' 🔴' if indicators[i]=='sell' else ' 🟢' if indicators[i]=='buy' else ''][0]
+        #sg_RSI_10 = hist['sg_RSI_10'].iloc[-1]
+        #sg_RSI_50 = hist['sg_RSI_50'].iloc[-1]
+        #sg_BB_10 = hist['sg_BB_10'].iloc[-1]
+        #sg_BB_50 = hist['sg_BB_50'].iloc[-1]
+        message = '{}. <b>{}</b> {} <code>{:,.2f}%</code>\nsg_RSI_10 {}\nsg_RSI_50 {}\nsg_BB_10 {}\nsg_BB_50 {}'.format(cnt, ticker_lookup, up_down_symbol, pct_change, indicators[0],indicators[1],indicators[2],indicators[3])#sg_RSI_10, sg_RSI_50, sg_BB_10, sg_BB_50)
         api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
         requests.get(api_url)
 
