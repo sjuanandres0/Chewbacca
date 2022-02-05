@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import datetime
 import dash_table
+#from dash import dash_table
 from dash_table import DataTable, FormatTemplate
 
 today = datetime.date.today()

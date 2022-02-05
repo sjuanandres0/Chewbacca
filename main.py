@@ -7,6 +7,9 @@ import chewie_variables as ch_var
 from datetime import datetime
 import talib
 
+from sqlalchemy import create_engine
+engine = create_engine('sqlite:///data.db')
+
 start_tmsp = datetime.now()
 cnt = 0
 bot_id = os.environ.get('bot_id')
@@ -86,6 +89,7 @@ for ticker_lookup in ticker_list:
 # Save new ticker_data
 #base_old = pd.read('ticker_data.csv')
 base.to_csv('ticker_data.csv', index=False)
+base.to_sql(name='ticker_data', con=engine, if_exists='replace')
 
 # Overview details
 total_tickers = len(ticker_list)
@@ -95,5 +99,6 @@ elapsed_sec = (end_tmsp - start_tmsp).seconds
 message = 'Ran_{}\nElapsed_{}_secs\n{}_tickers\n{}_rows\n<a href="{}">Dashboard</a>'.format(machine, elapsed_sec, total_tickers, total_rows, ch_var.chewie_url)
 api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
 requests.get(api_url)
+
 
 # End
