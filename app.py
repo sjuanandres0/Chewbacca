@@ -1,4 +1,3 @@
-import os
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -8,9 +7,8 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 import datetime
-import dash_table
-#from dash import dash_table
-from dash_table import DataTable, FormatTemplate
+import chewie_pack
+from dash.dash_table import DataTable, FormatTemplate
 
 today = datetime.date.today()
 yesterday = today - datetime.timedelta(days=1)
@@ -25,9 +23,14 @@ df = df[df.index.year>=2010]
 tickers = df.ticker.unique()
 
 #d_columns = df.columns
-d_columns = ['Date','Close','sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']
-d_columns = [{'name':x, 'id':x} for x in d_columns if x not in ['as','asd']]
-#d_table = 
+money_format = FormatTemplate.money(2)
+#d_columns = ['Date','Close'] + chewie_pack.indicators #,'sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']
+#d_columns = [{'name':x, 'id':x} for x in d_columns if x not in ['as','asd']]
+d_columns = [
+    dict(id='Date', name='Date'),
+    dict(id='Close', name='Close', type='numeric', format=money_format),
+] + [{'id':x, 'name':x} for x in chewie_pack.indicators]
+
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -100,10 +103,32 @@ app.layout = html.Div(children=[
             data = df.to_dict('records'),
             cell_selectable = False,
   			sort_action = 'native',
-            filter_action = 'native',
+            #filter_action = 'native',
             page_action = 'native',
             page_current = 0,
             page_size = 10,
+            style_header={'fontWeight':'bold', 'backgroundColor':'light-grey'},
+            style_data = {'color':'white','backgroundColor':'black', 'border':'0px' },
+            style_data_conditional=(
+            [
+                {
+                    'if': {
+                        'filter_query': '{{{col}}} = "sell"'.format(col=col),
+                        'column_id': col
+                    },
+                    'color': 'tomato'
+                } for col in chewie_pack.indicators
+            ]+
+            [
+            {
+                    'if': {
+                        'filter_query': '{{{col}}} = "buy"'.format(col=col),
+                        'column_id': col
+                    },
+                    'color': 'green'
+                } for col in chewie_pack.indicators
+            ]
+            )
             )
     ], style={'display':'inline-block', 'padding':'10px','width': '85%'})
     #,html.Div(d_table, style={'width':'1000px', 'height':'350px', 'margin':'10px auto', 'padding-right':'30px'})
@@ -166,7 +191,7 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
     Input("dropdown-ticker", "value"))
 def update_table(ticker_dropdown):
     df_copy = df.copy(deep=True)
-    df_copy = df_copy[df_copy['ticker']==ticker_dropdown].sort_index(ascending=False).reset_index()[['Date','Close','sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']]
+    df_copy = df_copy[df_copy['ticker']==ticker_dropdown].sort_index(ascending=False).reset_index()[['Date','Close'] + chewie_pack.indicators]
     #df_copy['Date'] = datetime.date(df_copy['Date'])
     return df_copy.to_dict('records')
     #dff = df
