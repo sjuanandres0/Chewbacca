@@ -72,11 +72,11 @@ app.layout = html.Div(children=[
         )
         ,html.Br()
         ,dcc.DatePickerRange(id='date_picker'
-            ,min_date_allowed=df.index.date.min()
-            ,max_date_allowed=df.index.date.max()
-            ,initial_visible_month=yesterday
-            ,start_date=old_today
-            ,end_date=yesterday
+            ,min_date_allowed = df.index.date.min()
+            ,max_date_allowed = df.index.date.max()
+            ,initial_visible_month = yesterday
+            ,start_date = old_today
+            ,end_date = yesterday
             ,style={'margin':'0 auto','background-color':'lightgrey'}
         )
         ,html.Br()
@@ -96,14 +96,14 @@ app.layout = html.Div(children=[
         )
         ,DataTable(
             id = 'datatable-signals',
-            columns=d_columns,
-            data=df.to_dict('records'),
-            cell_selectable=False,
-  			sort_action='native',
-            filter_action='native',
-            page_action='native',
-            page_current= 0,
-            page_size= 10,
+            columns = d_columns,
+            data = df.to_dict('records'),
+            cell_selectable = False,
+  			sort_action = 'native',
+            filter_action = 'native',
+            page_action = 'native',
+            page_current = 0,
+            page_size = 10,
             )
     ], style={'display':'inline-block', 'padding':'10px','width': '85%'})
     #,html.Div(d_table, style={'width':'1000px', 'height':'350px', 'margin':'10px auto', 'padding-right':'30px'})
@@ -135,25 +135,25 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
     df_plot = df_plot[df_plot['ticker']==ticker_dropdown]
     
     fig_candle = go.Figure(go.Candlestick(
-        x=df_plot.index,
-        open=df_plot.Open,
-        high=df_plot.High,
-        low=df_plot.Low,
-        close=df_plot.Close
+        x = df_plot.index,
+        open = df_plot.Open,
+        high = df_plot.High,
+        low = df_plot.Low,
+        close = df_plot.Close
     ))
     fig_candle.update_layout(
         title = ticker_dropdown + ' historic OHLC'
         ,xaxis_rangeslider_visible='slider' in value_range_slider
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
-        ,font={'color':'orange'}
-        ,xaxis={'showgrid':False}
+        ,font = {'color':'orange'}
+        ,xaxis = {'showgrid':False}
     )
 
     fig_pct_change = px.line(df_plot, y='pct_change')
     fig_pct_change.update_layout(
         title = ticker_dropdown + ' historic Pct Change'
-        ,xaxis_rangeslider_visible='slider' in value_range_slider
+        ,xaxis_rangeslider_visible ='slider' in value_range_slider
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
         ,font={'color':'orange'}
