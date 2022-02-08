@@ -95,8 +95,10 @@ app.layout = html.Div(children=[
 #    ,html.Br()
         dcc.Graph(id="candle_graph"
         )
+        ,html.Br()
         ,dcc.Graph(id="pct_change_graph"
         )
+        ,html.Br()
         ,DataTable(
             id = 'datatable-signals',
             columns = d_columns,

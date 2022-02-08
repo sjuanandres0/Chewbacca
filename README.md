@@ -2,4 +2,4 @@
 Chewie trading from Millennium Falcon
 
 ## Dashboard
-https://chewbacca22.herokuapp.com/
+<a href="https://chewbacca22.herokuapp.com/">Click here to see Chewie's console.</a>

@@ -70,7 +70,7 @@ for ticker_lookup in ticker_list:
     if not_hold: 
     #if ticker_lookup == 'BTC-USD':
         cnt += 1
-        up_down_symbol = ['📉↘️' if pct_change<0 else '📈↗️'][0]
+        up_down_symbol = ['📉' if pct_change<0 else '📈'][0] ##🔻🔼
 
         message = '{}. <b>{}</b> {} <code>{:,.2f} {:,.2f}%</code>'.format(cnt, ticker_lookup, up_down_symbol, nom_change, pct_change)
         signals = []

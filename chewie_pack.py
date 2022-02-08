@@ -28,7 +28,7 @@ def BHS_to_sg(BHS):
         return 1
     elif BHS=='hold':
         return 0
-    elif BHS=='sell':
+    elif BHS=='sell':   
         return -1
     else:
         return null
