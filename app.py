@@ -95,10 +95,7 @@ app.layout = html.Div(children=[
     ], style={'display':'inline-block', 'verticalAlign': 'top', 'padding':'10px','width': '10%'})
     ,html.Div(children=[
 #    ,html.Br()
-        dcc.Graph(id="candle_graph"
-        )
-        ,html.Br()
-        ,dcc.Graph(id="pct_change_graph"
+        dcc.Graph(id="strategy_graph"
         )
         ,html.Br()
         ,DataTable(
@@ -112,7 +109,7 @@ app.layout = html.Div(children=[
             page_current = 0,
             page_size = 15,
             style_header={'fontWeight':'bold', 'backgroundColor':'light-grey'},
-            style_data = {'color':'white','backgroundColor':'black', 'border':'0px' },
+            style_data = {'color':'grey','backgroundColor':'black', 'border':'0px' },
             style_data_conditional=(
             [
                 {
@@ -134,7 +131,11 @@ app.layout = html.Div(children=[
             ]
             )
         )
-        ,dcc.Graph(id="strategy_graph"
+        ,html.Br()
+        ,dcc.Graph(id="pct_change_graph"
+        )
+        ,html.Br()
+        ,dcc.Graph(id="candle_graph"
         )
     ], style={'display':'inline-block', 'padding':'10px','width': '85%'})
     #,html.Div(d_table, style={'width':'1000px', 'height':'350px', 'margin':'10px auto', 'padding-right':'30px'})
@@ -147,6 +148,8 @@ app.layout = html.Div(children=[
 , style={'background-color':'black', 'padding':'10px', 'margin':'0px'}
 )
 
+
+# CALLBACKs section
 
 @app.callback(
     Output("candle_graph", "figure"), 
@@ -179,7 +182,7 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
         ,font = {'color':'orange'}
-        ,xaxis = {'showgrid':False}
+        ,xaxis = {'showgrid':False,'title':None}
         ,yaxis={'showgrid':True,'gridcolor':'darkgrey'}
     )
 
@@ -190,8 +193,8 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
         ,font={'color':'orange'}
-        ,xaxis={'showgrid':False}
-        ,yaxis={'showgrid':True,'gridcolor':'darkgrey'}
+        ,xaxis={'showgrid':False,'title':None}
+        ,yaxis={'showgrid':True,'gridcolor':'darkgrey','title':None}
         )
     return fig_candle, fig_pct_change
 
@@ -219,8 +222,8 @@ def update_strategy(ticker, start, end):
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
         ,font={'color':'orange'}
-        ,xaxis={'showgrid':False,'gridcolor':'red'}
-        ,yaxis={'showgrid':True,'gridcolor':'darkgrey'}
+        ,xaxis={'showgrid':False,'gridcolor':'red','title':None}
+        ,yaxis={'showgrid':True,'gridcolor':'darkgrey','title':None}
         ,legend=dict(
             orientation="h",
             yanchor="bottom",
@@ -229,6 +232,8 @@ def update_strategy(ticker, start, end):
             x=1
             ,font={'color':'white'}
         ))
+    #fig_strategies.update_yaxes(title=None)#visible=True, showticklabels=False)
+
     return fig_strategies
 
 
