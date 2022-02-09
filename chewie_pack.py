@@ -1,3 +1,4 @@
+import bt
 
 # Start date for getting data
 start_date='2010-01-01'
@@ -40,3 +41,53 @@ def ADX_sg(value):
         return 'trending_mkt'
     else:
         return 'strong_trending_mkt'
+
+
+#### Benchmarking example
+def buy_and_hold(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
+    # Get the data
+    close = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)]['Close'].to_frame()
+    # Define the benchmark strategy
+    bt_strategy = bt.Strategy(signal_name,
+        [bt.algos.RunOnce(),
+        bt.algos.SelectAll(),
+        bt.algos.WeighEqually(),
+        bt.algos.Rebalance()])
+    # Return the backtest
+    return bt.Backtest(bt_strategy, close)
+
+#### Strategy Optimization Signal or MA Crossover
+def signal_trend(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
+    close = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)]['Close'].to_frame()
+    signal = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)][signal_name]
+    #signal = signal.apply(chewie_pack.BHS_to_sg).to_frame(name='Close')
+    signal = signal.apply(BHS_to_sg).to_frame(name='Close')
+    # Define the signal-based strategy
+    bt_strategy = bt.Strategy(signal_name,
+        [bt.algos.SelectWhere(signal),
+        bt.algos.WeighEqually(),
+        bt.algos.Rebalance()])
+    return bt.Backtest(bt_strategy, close)
+
+#### Strategy Optimization RSI-based Mean Reversion
+def signal_rever(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
+    close = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)]['Close'].to_frame()
+    signal = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)][signal_name]
+    #signal = signal.apply(chewie_pack.BHS_to_sg).to_frame(name='Close')    
+    signal = signal.apply(BHS_to_sg).to_frame(name='Close')    
+    # Define the signal-based strategy
+    bt_strategy = bt.Strategy(signal_name,
+                 [bt.algos.WeighTarget(signal), 
+                bt.algos.Rebalance()]) 
+    return bt.Backtest(bt_strategy, close)
+
+### All strategies
+def strategies(df, ticker, start, end):
+    benchmark = buy_and_hold(df=df, ticker=ticker, signal_name='Buy_and_Hold', start=start, end=end)
+    sg_AboveSMA_10 = signal_trend(df=df, ticker=ticker, signal_name='sg_AboveSMA_10', start=start, end=end)
+    sg_AboveSMA_50 = signal_trend(df=df, ticker=ticker, signal_name='sg_AboveSMA_50', start=start, end=end)
+    sg_RSI_10 = signal_rever(df=df, ticker=ticker, signal_name='sg_RSI_10', start=start, end=end)
+    sg_RSI_50 = signal_rever(df=df, ticker=ticker, signal_name='sg_RSI_50', start=start, end=end)
+    # Run all backtests and plot the resutls
+    bt_results = bt.run(benchmark, sg_AboveSMA_10, sg_AboveSMA_50, sg_RSI_10, sg_RSI_50)
+    return bt_results #.plot(title='Strategies for {}'.format(ticker))

@@ -9,6 +9,8 @@ import numpy as np
 import datetime
 import chewie_pack
 from dash.dash_table import DataTable, FormatTemplate
+import warnings
+warnings.filterwarnings('ignore')
 
 today = datetime.date.today()
 yesterday = today - datetime.timedelta(days=1)
@@ -71,7 +73,7 @@ app.layout = html.Div(children=[
             id='dropdown-ticker'
             ,options=[{'label': i, 'value': i} for i in tickers]
             ,value='BTC-USD'
-            ,style={'background-color':'lightgrey'}
+            #,style={'background-color':'lightgrey'}
         )
         ,html.Br()
         ,dcc.DatePickerRange(id='date_picker'
@@ -108,7 +110,7 @@ app.layout = html.Div(children=[
             #filter_action = 'native',
             page_action = 'native',
             page_current = 0,
-            page_size = 10,
+            page_size = 15,
             style_header={'fontWeight':'bold', 'backgroundColor':'light-grey'},
             style_data = {'color':'white','backgroundColor':'black', 'border':'0px' },
             style_data_conditional=(
@@ -131,7 +133,9 @@ app.layout = html.Div(children=[
                 } for col in chewie_pack.indicators
             ]
             )
-            )
+        )
+        ,dcc.Graph(id="strategy_graph"
+        )
     ], style={'display':'inline-block', 'padding':'10px','width': '85%'})
     #,html.Div(d_table, style={'width':'1000px', 'height':'350px', 'margin':'10px auto', 'padding-right':'30px'})
     ,html.P("Report updated: {}".format(today), style={
@@ -169,22 +173,25 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
         close = df_plot.Close
     ))
     fig_candle.update_layout(
-        title = ticker_dropdown + ' historic OHLC'
-        ,xaxis_rangeslider_visible='slider' in value_range_slider
+        title = '<b>{}</b> historic OHLC'.format(ticker_dropdown)
+#        ,xaxis_rangeslider_visible='slider' in value_range_slider
+        ,xaxis_rangeslider_visible=False
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
         ,font = {'color':'orange'}
         ,xaxis = {'showgrid':False}
+        ,yaxis={'showgrid':True,'gridcolor':'darkgrey'}
     )
 
     fig_pct_change = px.line(df_plot, y='pct_change')
     fig_pct_change.update_layout(
-        title = ticker_dropdown + ' historic Pct Change'
-        ,xaxis_rangeslider_visible ='slider' in value_range_slider
+        title = '<b>{}</b> historic Pct Change'.format(ticker_dropdown)
+#        ,xaxis_rangeslider_visible ='slider' in value_range_slider
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
         ,font={'color':'orange'}
         ,xaxis={'showgrid':False}
+        ,yaxis={'showgrid':True,'gridcolor':'darkgrey'}
         )
     return fig_candle, fig_pct_change
 
@@ -196,7 +203,33 @@ def update_table(ticker_dropdown):
     df_copy = df_copy[df_copy['ticker']==ticker_dropdown].sort_index(ascending=False).reset_index()[['Date','Close'] + chewie_pack.indicators]
     #df_copy['Date'] = datetime.date(df_copy['Date'])
     return df_copy.to_dict('records')
-    #dff = df
+    
+
+@app.callback(
+    Output('strategy_graph','figure'),
+    [Input("dropdown-ticker", "value"),
+    Input("date_picker", 'start_date'),
+    Input("date_picker", 'end_date')
+    ])
+def update_strategy(ticker, start, end):
+    bt_results = chewie_pack.strategies(df, ticker, start, end)
+    fig_strategies = px.line(bt_results.prices)
+    fig_strategies.update_layout(
+        title = '<b>{}</b> Backtesting Strategies'.format(ticker)
+        ,plot_bgcolor ='black'
+        ,paper_bgcolor = 'black'
+        ,font={'color':'orange'}
+        ,xaxis={'showgrid':False,'gridcolor':'red'}
+        ,yaxis={'showgrid':True,'gridcolor':'darkgrey'}
+        ,legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.07,#1.02,
+            xanchor="right",
+            x=1
+            ,font={'color':'white'}
+        ))
+    return fig_strategies
 
 
 if __name__ == '__main__':
