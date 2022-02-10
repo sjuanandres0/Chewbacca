@@ -91,3 +91,10 @@ def strategies(df, ticker, start, end):
     # Run all backtests and plot the resutls
     bt_results = bt.run(benchmark, sg_AboveSMA_10, sg_AboveSMA_50, sg_RSI_10, sg_RSI_50)
     return bt_results #.plot(title='Strategies for {}'.format(ticker))
+
+stats_to_display = ['total_return', 'cagr', 'max_drawdown', 'calmar',
+       'daily_sharpe', 'daily_sortino', 'daily_mean', 'daily_vol', 'daily_skew', 'daily_kurt', 
+       'best_day', 'worst_day', 
+       'monthly_sharpe', 'monthly_sortino', 'monthly_mean', 'monthly_vol', 'monthly_skew', 'monthly_kurt', 
+       'best_month', 'worst_month', 
+       'avg_drawdown', 'avg_drawdown_days', 'avg_up_month', 'avg_down_month']

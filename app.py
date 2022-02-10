@@ -1,3 +1,4 @@
+from operator import index
 import dash
 from dash import dcc
 from dash import html
@@ -28,10 +29,15 @@ tickers = df.ticker.unique()
 money_format = FormatTemplate.money(2)
 #d_columns = ['Date','Close'] + chewie_pack.indicators #,'sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']
 #d_columns = [{'name':x, 'id':x} for x in d_columns if x not in ['as','asd']]
-d_columns = [
+d_columns_signals = [
     dict(id='Date', name='Date'),
     dict(id='Close', name='Close', type='numeric', format=money_format),
 ] + [{'id':x, 'name':x} for x in chewie_pack.indicators]
+
+# WIP module, to improve:
+to_define_better = 'Stat','Buy_and_Hold','sg_RSI_10','sg_RSI_50','sg_AboveSMA_10','sg_AboveSMA_50'
+d_columns_stats = [{'id':x, 'name':x} for x in to_define_better]
+df_stats = pd.DataFrame(columns=to_define_better, index=chewie_pack.stats_to_display)
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -70,7 +76,7 @@ app.layout = html.Div(children=[
     ,html.Br()
     ,html.Div(children=[
         dcc.Dropdown(
-            id='dropdown-ticker'
+            id='dropdown_ticker'
             ,options=[{'label': i, 'value': i} for i in tickers]
             ,value='BTC-USD'
             #,style={'background-color':'lightgrey'}
@@ -87,7 +93,7 @@ app.layout = html.Div(children=[
         ,html.Br()
         ,html.Br()
         ,dcc.Checklist(
-            id='toggle-rangeslider',
+            id='rangeslider_toggle',
             options=[{'label': 'Include Rangeslider', 
                     'value': 'slider'}],
             value=['slider'], style={'color':'white'}
@@ -95,12 +101,12 @@ app.layout = html.Div(children=[
     ], style={'display':'inline-block', 'verticalAlign': 'top', 'padding':'10px','width': '10%'})
     ,html.Div(children=[
 #    ,html.Br()
-        dcc.Graph(id="strategy_graph"
+        dcc.Graph(id='graph_strategy'
         )
         ,html.Br()
         ,DataTable(
-            id = 'datatable-signals',
-            columns = d_columns,
+            id = 'datatable_signals',
+            columns = d_columns_signals,
             data = df.to_dict('records'),
             cell_selectable = False,
   			sort_action = 'native',
@@ -132,10 +138,25 @@ app.layout = html.Div(children=[
             )
         )
         ,html.Br()
-        ,dcc.Graph(id="pct_change_graph"
+        #,DataTable(id='datatable_strategies_stats')
+        ,DataTable(
+            id = 'datatable_strategies_stats',
+            columns = d_columns_stats,
+            data = df_stats.to_dict('records'),
+            cell_selectable = False,
+  			sort_action = 'native',
+            #filter_action = 'native',
+            page_action = 'native',
+            page_current = 0,
+            page_size = 24,
+            style_header={'fontWeight':'bold', 'backgroundColor':'light-grey'},
+            style_data = {'color':'white','backgroundColor':'black', 'border':'0.2px solid grey' }
         )
         ,html.Br()
-        ,dcc.Graph(id="candle_graph"
+        ,dcc.Graph(id="graph_pct_change"
+        )
+        ,html.Br()
+        ,dcc.Graph(id="graph_candle"
         )
     ], style={'display':'inline-block', 'padding':'10px','width': '85%'})
     #,html.Div(d_table, style={'width':'1000px', 'height':'350px', 'margin':'10px auto', 'padding-right':'30px'})
@@ -152,14 +173,13 @@ app.layout = html.Div(children=[
 # CALLBACKs section
 
 @app.callback(
-    Output("candle_graph", "figure"), 
-    Output("pct_change_graph", "figure"),
-    [Input("toggle-rangeslider", "value"),
-    Input("dropdown-ticker", "value"),
-    Input("date_picker", 'start_date'),
-    Input("date_picker", 'end_date')
+    Output('graph_candle', 'figure'), 
+    Output('graph_pct_change', 'figure'),
+    [Input('rangeslider_toggle', 'value'),
+    Input('dropdown_ticker', 'value'),
+    Input('date_picker', 'start_date'),
+    Input('date_picker', 'end_date')
     ])
-
 def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
     df_plot = df.copy(deep=True)
     #if end_date == None:
@@ -198,9 +218,10 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
         )
     return fig_candle, fig_pct_change
 
+
 @app.callback(
-    Output('datatable-signals', 'data'),
-    Input("dropdown-ticker", "value"))
+    Output('datatable_signals', 'data'),
+    Input('dropdown_ticker', 'value'))
 def update_table(ticker_dropdown):
     df_copy = df.copy(deep=True)
     df_copy = df_copy[df_copy['ticker']==ticker_dropdown].sort_index(ascending=False).reset_index()[['Date','Close'] + chewie_pack.indicators]
@@ -209,8 +230,9 @@ def update_table(ticker_dropdown):
     
 
 @app.callback(
-    Output('strategy_graph','figure'),
-    [Input("dropdown-ticker", "value"),
+    Output('graph_strategy','figure'),
+    Output('datatable_strategies_stats', 'data'),
+    [Input('dropdown_ticker', 'value'),
     Input("date_picker", 'start_date'),
     Input("date_picker", 'end_date')
     ])
@@ -232,9 +254,8 @@ def update_strategy(ticker, start, end):
             x=1
             ,font={'color':'white'}
         ))
-    #fig_strategies.update_yaxes(title=None)#visible=True, showticklabels=False)
-
-    return fig_strategies
+    table_stats = bt_results.stats.loc[chewie_pack.stats_to_display].astype(float).round(2).reset_index().rename(columns={'index':'Stat'})
+    return fig_strategies, table_stats.to_dict('records')
 
 
 if __name__ == '__main__':
