@@ -3,6 +3,7 @@ drafts/
 config/
 DC_Financial_Trading_in_Python/
 DC_Building_Dashboards_with_Dash_and_Plotly/
+DC_Writing_Efficient_Python_Code/
 app2.py
 requirements2.txt
 venv
