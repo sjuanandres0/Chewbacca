@@ -42,6 +42,7 @@ df_stats = pd.DataFrame(columns=to_define_better, index=chewie_pack.stats_to_dis
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app.title = 'Favicon'
 #app = dash.Dash(__name__)
 server = app.server
 
