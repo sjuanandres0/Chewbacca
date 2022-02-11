@@ -1,5 +1,6 @@
 from operator import index
 import dash
+import dash_bootstrap_components as dbc
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
@@ -42,76 +43,81 @@ df_stats = pd.DataFrame(columns=to_define_better, index=chewie_pack.stats_to_dis
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.title = 'Favicon'
+app.title = 'Chewbacca'
 #app = dash.Dash(__name__)
 server = app.server
 
+# styling the sidebar
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "black",
+}
+
+
 app.layout = html.Div(children=[
     html.Div(children=[
-        html.Img(src=logo_link, style={
-            'display':'inline-block' 
-            ,'margin':'0px'#'20px 10px 0px 10px' 
-            ,'height':'40px'
-            #,'width':'100px'
-            #,'border':'1px solid white'
-            ,'verticalAlign': 'top'
-            #,'textAlign': 'right'
-            })
-        ,html.P("Hi Galaxy, I'm Chewie!", style={
-            'margin':'0px'
-            ,'padding':'0px 0px 0px 20px'
-            #,'verticalAlign': 'top'
-            ,'height':'40px'
-            #,'border':'1px dotted lightblue'
-            #,'background-color':'black'
-            ,'color':'white'
-            ,'display':'inline-block'
-            #,'textAlign': 'center'
-            #,'width': '100%', 
-            #,'display': 'flex'
-            ,'fontSize': '150%'
-            #, 'align-items': 'center' 
-            #,'justify-content': 'center'
-            })
-    ], style={'color':'black','background-color':'black','border':'0px dotted yellow'})
-    ,html.Br()
+        dbc.Nav(children=[
+            html.Img(src=logo_link, style={
+                'margin':'0px'#'20px 10px 0px 10px' 
+                ,'height':'80px'
+                ,'padding':'10px 0px 10px 30px'
+                #,'text-align': 'center'
+                })
+            ,html.P(["Hi Galaxy, I'm Chewie!"], style={
+                'margin':'0px'
+                ,'padding':'2px'#'0px 0px 0px 20px'
+                ,'height':'40px'
+                ,'color':'white'
+                ,'fontSize': '100%'
+                ,'text-align': 'center'
+                })
+            ,html.Br()
+            ,html.Br()
+            ,dcc.Dropdown(
+                id='dropdown_ticker'
+                ,options=[{'label': i, 'value': i} for i in tickers]
+                ,value='BTC-USD'
+                ,style={'margin':'0px'}
+            )
+            ,html.Br()
+            ,dcc.DatePickerRange(id='date_picker'
+                ,min_date_allowed = df.index.date.min()
+                ,max_date_allowed = df.index.date.max()
+                ,initial_visible_month = yesterday
+                ,start_date = old_today
+                ,end_date = yesterday
+                #,style={'margin':'10px'}
+                #,style={'margin':'0 auto','background-color':'lightgrey'}
+            )
+            ,html.Br()
+            ,html.Br()
+            ,dcc.Checklist(
+                id='rangeslider_toggle',
+                options=[{'label': 'Include Rangeslider', 
+                        'value': 'slider'}],
+                value=['slider'], style={'color':'white'}
+            )
+            ,html.Br()
+            ,html.P(["Report updated:", html.Br(), today], style={
+                'color':'grey'
+                ,'text-align':'bottom'
+    })
+        ], style=SIDEBAR_STYLE)#{'color':'black','background-color':'black','border':'0px dotted yellow'})
+    ])
     ,html.Div(children=[
-        dcc.Dropdown(
-            id='dropdown_ticker'
-            ,options=[{'label': i, 'value': i} for i in tickers]
-            ,value='BTC-USD'
-            #,style={'background-color':'lightgrey'}
-        )
-        ,html.Br()
-        ,dcc.DatePickerRange(id='date_picker'
-            ,min_date_allowed = df.index.date.min()
-            ,max_date_allowed = df.index.date.max()
-            ,initial_visible_month = yesterday
-            ,start_date = old_today
-            ,end_date = yesterday
-            ,style={'margin':'0 auto','background-color':'lightgrey'}
-        )
-        ,html.Br()
-        ,html.Br()
-        ,dcc.Checklist(
-            id='rangeslider_toggle',
-            options=[{'label': 'Include Rangeslider', 
-                    'value': 'slider'}],
-            value=['slider'], style={'color':'white'}
-        )
-    ], style={'display':'inline-block', 'verticalAlign': 'top', 'padding':'10px','width': '10%'})
-    ,html.Div(children=[
-#    ,html.Br()
-        dcc.Graph(id='graph_strategy'
-        )
+        dcc.Graph(id='graph_strategy')
         ,html.Br()
         ,DataTable(
             id = 'datatable_signals',
             columns = d_columns_signals,
             data = df.to_dict('records'),
             cell_selectable = False,
-  			sort_action = 'native',
-            #filter_action = 'native',
+            sort_action = 'native',
             page_action = 'native',
             page_current = 0,
             page_size = 15,
@@ -139,13 +145,12 @@ app.layout = html.Div(children=[
             )
         )
         ,html.Br()
-        #,DataTable(id='datatable_strategies_stats')
         ,DataTable(
             id = 'datatable_strategies_stats',
             columns = d_columns_stats,
             data = df_stats.to_dict('records'),
             cell_selectable = False,
-  			sort_action = 'native',
+            sort_action = 'native',
             #filter_action = 'native',
             page_action = 'native',
             page_current = 0,
@@ -154,21 +159,11 @@ app.layout = html.Div(children=[
             style_data = {'color':'white','backgroundColor':'black', 'border':'0.2px solid grey' }
         )
         ,html.Br()
-        ,dcc.Graph(id="graph_pct_change"
-        )
+        ,dcc.Graph(id="graph_pct_change")
         ,html.Br()
-        ,dcc.Graph(id="graph_candle"
-        )
-    ], style={'display':'inline-block', 'padding':'10px','width': '85%'})
-    #,html.Div(d_table, style={'width':'1000px', 'height':'350px', 'margin':'10px auto', 'padding-right':'30px'})
-    ,html.P("Report updated: {}".format(today), style={
-        'color':'white'
-        #,'display':'inline-block'
-        ,'text-align':'right'
-    })
-]
-, style={'background-color':'black', 'padding':'10px', 'margin':'0px'}
-)
+        ,dcc.Graph(id="graph_candle")
+    ], style={'background-color':'black', 'padding':'0px','margin':'0px 0px 0px 18rem'}) #style={'display':'inline-block', 'padding':'10px','width': '85%'})
+], style={'background-color':'black', 'padding':'0px','margin':'0px'})
 
 
 # CALLBACKs section
