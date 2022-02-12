@@ -48,10 +48,12 @@ SIDEBAR_STYLE = {
     "position": "fixed",
     "top": 0,
     "left": 0,
+    #"right": 0,
     "bottom": 0,
-    "width": "16rem",
+    "width": "14rem",
     "padding": "2rem 1rem",
     "background-color": "black",
+    'z-index': '9999999'
 }
 
 
@@ -64,12 +66,14 @@ app.layout = html.Div(children=[
                 ,'padding':'10px 0px 10px 30px'
                 #,'text-align': 'center'
                 })
-            ,html.P(["Hi Galaxy, I'm Chewie!"], style={
+            #,html.P(["Hi Galaxy, I'm Chewie!"], style={
+            ,html.P(["Hi Galaxy,", html.Br(), "I'm Chewie"], style={
                 'margin':'0px'
                 ,'padding':'2px'#'0px 0px 0px 20px'
                 ,'height':'40px'
                 ,'color':'white'
-                ,'fontSize': '100%'
+                ,'fontSize': '110%'
+                ,'fontWeight':'bold'
                 ,'text-align': 'center'
                 })
             ,html.Br()
@@ -99,10 +103,14 @@ app.layout = html.Div(children=[
                 value=['slider'], style={'color':'white'}
             )
             ,html.Br()
-            ,html.P(["Report updated:", html.Br(), today], style={
+            #,html.P(["Report updated:", html.Br(), today], style={
+            ,html.P(["Report updated: ", today], style={
                 'color':'grey'
-                ,'text-align':'bottom'
-    })
+                #,'text-align':'bottom'
+                ,'position':'absolute'
+                ,'bottom':0
+                ,'fontSize':'70%'
+            })
         ], style=SIDEBAR_STYLE)#{'color':'black','background-color':'black','border':'0px dotted yellow'})
     ])
     ,html.Div(children=[
@@ -159,7 +167,7 @@ app.layout = html.Div(children=[
         ,html.Br()
         ,dcc.Graph(id="graph_candle")
     ], style={'background-color':'black', 'padding':'0px','margin':'0px 0px 0px 18rem'}) #style={'display':'inline-block', 'padding':'10px','width': '85%'})
-], style={'background-color':'black', 'padding':'0px','margin':'0px'})
+], style={'background-color':'black', 'padding':'10px','margin':'0px'})
 
 
 # CALLBACKs section
