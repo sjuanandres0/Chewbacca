@@ -49,10 +49,12 @@ for ticker_lookup in ticker_list:
     hist['ADX_10'] = talib.ADX(hist['High'], hist['Low'], hist['Close'], timeperiod=50)
 
     # Creating signals
-    hist['sg_AboveSMA_10'] = hist[['Close','SMA_10']].apply(lambda x: 'buy' if x.Close>x.SMA_10 else 'sell' if x.Close<x.SMA_10 else 'hold', axis=1)
-    hist['sg_AboveSMA_50'] = hist[['Close','SMA_50']].apply(lambda x: 'buy' if x.Close>x.SMA_50 else 'sell' if x.Close<x.SMA_50 else 'hold', axis=1)
-    hist['sg_AboveEMA_10'] = hist[['Close','EMA_10']].apply(lambda x: 'buy' if x.Close>x.EMA_10 else 'sell' if x.Close<x.EMA_10 else 'hold', axis=1)
-    hist['sg_AboveEMA_50'] = hist[['Close','EMA_50']].apply(lambda x: 'buy' if x.Close>x.EMA_50 else 'sell' if x.Close<x.EMA_50 else 'hold', axis=1)
+#    hist['sg_AboveSMA_10'] = hist[['Close','SMA_10']].apply(lambda x: 'buy' if x.Close>x.SMA_10 else 'sell' if x.Close<x.SMA_10 else 'hold', axis=1)
+#    hist['sg_AboveSMA_50'] = hist[['Close','SMA_50']].apply(lambda x: 'buy' if x.Close>x.SMA_50 else 'sell' if x.Close<x.SMA_50 else 'hold', axis=1)
+    hist['sg_SMA_Cross'] = hist[['SMA_10','SMA_50']].apply(lambda x: 'buy' if x.SMA_10>x.SMA_50 else 'sell' if x.SMA_10<x.SMA_50 else 'hold', axis=1)
+#    hist['sg_AboveEMA_10'] = hist[['Close','EMA_10']].apply(lambda x: 'buy' if x.Close>x.EMA_10 else 'sell' if x.Close<x.EMA_10 else 'hold', axis=1)
+#    hist['sg_AboveEMA_50'] = hist[['Close','EMA_50']].apply(lambda x: 'buy' if x.Close>x.EMA_50 else 'sell' if x.Close<x.EMA_50 else 'hold', axis=1)
+    hist['sg_EMA_Cross'] = hist[['EMA_10','EMA_50']].apply(lambda x: 'buy' if x.EMA_10>x.EMA_50 else 'sell' if x.EMA_10<x.EMA_50 else 'hold', axis=1)
     hist['sg_ADX_10'] = hist['ADX_10'].map(chewie_pack.ADX_sg)
     hist['sg_ADX_50'] = hist['ADX_50'].map(chewie_pack.ADX_sg)
     hist['sg_RSI_10'] = hist['RSI_10'].apply(lambda x: 'buy' if x<25 else 'sell' if x>75 else 'hold')
@@ -100,3 +102,4 @@ requests.get(api_url)
 
 # End
 print('main.py run complete')
+print('elapsed_time={}sec'.format(elapsed_sec))

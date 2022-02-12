@@ -20,25 +20,21 @@ old_today = today - datetime.timedelta(days=120)
 
 #logo_link = 'https://www.nicepng.com/png/detail/163-1637042_vector-free-chewbacca-vector-head-chewbacca.png'
 #logo_link = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBqOjxj2ccsPVGyMuVBgqRZCSzDn_Uh7E9OljlQzbpgdV8BlrRrbbxsENV7zZpj_QmULo&usqp=CAU'
-logo_link = 'https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/img/Chewie.png'
+logo_link = 'https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/assets/Chewie.png'
 #df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv')
 df = pd.read_csv('ticker_data.csv', index_col='Date', parse_dates=True)
 df = df[df.index.year>=2010]
 tickers = df.ticker.unique()
 
-#d_columns = df.columns
 money_format = FormatTemplate.money(2)
-#d_columns = ['Date','Close'] + chewie_pack.indicators #,'sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']
-#d_columns = [{'name':x, 'id':x} for x in d_columns if x not in ['as','asd']]
 d_columns_signals = [
     dict(id='Date', name='Date'),
     dict(id='Close', name='Close', type='numeric', format=money_format),
 ] + [{'id':x, 'name':x} for x in chewie_pack.indicators]
 
-# WIP module, to improve:
-to_define_better = 'Stat','Buy_and_Hold','sg_RSI_10','sg_RSI_50','sg_AboveSMA_10','sg_AboveSMA_50'
-d_columns_stats = [{'id':x, 'name':x} for x in to_define_better]
-df_stats = pd.DataFrame(columns=to_define_better, index=chewie_pack.stats_to_display)
+d_columns_stats = ['Stat']+chewie_pack.strategies
+d_columns_stats_dict = [{'id':x, 'name':x} for x in d_columns_stats]
+df_stats = pd.DataFrame(columns=d_columns_stats, index=chewie_pack.stats_to_display)
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -147,7 +143,7 @@ app.layout = html.Div(children=[
         ,html.Br()
         ,DataTable(
             id = 'datatable_strategies_stats',
-            columns = d_columns_stats,
+            columns = d_columns_stats_dict,
             data = df_stats.to_dict('records'),
             cell_selectable = False,
             sort_action = 'native',
@@ -233,7 +229,7 @@ def update_table(ticker_dropdown):
     Input("date_picker", 'end_date')
     ])
 def update_strategy(ticker, start, end):
-    bt_results = chewie_pack.strategies(df, ticker, start, end)
+    bt_results = chewie_pack.strategies_eval(df, ticker, start, end)
     fig_strategies = px.line(bt_results.prices)
     fig_strategies.update_layout(
         title = '<b>{}</b> Backtesting Strategies'.format(ticker)
@@ -249,6 +245,7 @@ def update_strategy(ticker, start, end):
             xanchor="right",
             x=1
             ,font={'color':'white'}
+            ,title=''
         ))
     table_stats = bt_results.stats.loc[chewie_pack.stats_to_display].astype(float).round(2).reset_index().rename(columns={'index':'Stat'})
     return fig_strategies, table_stats.to_dict('records')

@@ -12,7 +12,11 @@ ticker_list = ticker_list_crypto + ticker_list_stocks # + tickers_list_others
 # Chewbacca Heroku Link
 chewie_url = 'https://chewbacca22.herokuapp.com/'
 
-indicators = ['sg_AboveSMA_10','sg_AboveSMA_50','sg_AboveEMA_10','sg_AboveEMA_50', 'sg_ADX_10', 'sg_ADX_50','sg_RSI_10', 'sg_RSI_50', 'sg_BB_10', 'sg_BB_50']
+# List of Indicators
+indicators = ['sg_SMA_Cross','sg_EMA_Cross','sg_ADX_10','sg_ADX_50','sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']
+# List of Strategies
+strategies = ['Buy_and_Hold','sg_SMA_Cross','sg_EMA_Cross','sg_RSI_10','sg_RSI_50','sg_BB_10','sg_BB_50']
+
 
 def BB_func(close, upper, lower):
     '''Function to calculate if to buy, sell or hold'''
@@ -32,7 +36,7 @@ def BHS_to_sg(BHS):
     elif BHS=='sell':   
         return -1
     else:
-        return null
+        return None
 
 def ADX_sg(value):
     if value<=25:
@@ -60,7 +64,6 @@ def buy_and_hold(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
 def signal_trend(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
     close = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)]['Close'].to_frame()
     signal = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)][signal_name]
-    #signal = signal.apply(chewie_pack.BHS_to_sg).to_frame(name='Close')
     signal = signal.apply(BHS_to_sg).to_frame(name='Close')
     # Define the signal-based strategy
     bt_strategy = bt.Strategy(signal_name,
@@ -73,7 +76,6 @@ def signal_trend(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
 def signal_rever(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
     close = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)]['Close'].to_frame()
     signal = df.loc[(df.ticker==ticker) & (df.index>start) & (df.index<end)][signal_name]
-    #signal = signal.apply(chewie_pack.BHS_to_sg).to_frame(name='Close')    
     signal = signal.apply(BHS_to_sg).to_frame(name='Close')    
     # Define the signal-based strategy
     bt_strategy = bt.Strategy(signal_name,
@@ -81,15 +83,16 @@ def signal_rever(df, ticker, signal_name, start='2020-01-01', end='2021-12-31'):
                 bt.algos.Rebalance()]) 
     return bt.Backtest(bt_strategy, close)
 
-### All strategies
-def strategies(df, ticker, start, end):
+#### All strategies
+def strategies_eval(df, ticker, start, end):
     benchmark = buy_and_hold(df=df, ticker=ticker, signal_name='Buy_and_Hold', start=start, end=end)
-    sg_AboveSMA_10 = signal_trend(df=df, ticker=ticker, signal_name='sg_AboveSMA_10', start=start, end=end)
-    sg_AboveSMA_50 = signal_trend(df=df, ticker=ticker, signal_name='sg_AboveSMA_50', start=start, end=end)
+    sg_SMA_Cross = signal_trend(df=df, ticker=ticker, signal_name='sg_SMA_Cross', start=start, end=end)
+    sg_EMA_Cross = signal_trend(df=df, ticker=ticker, signal_name='sg_EMA_Cross', start=start, end=end)
     sg_RSI_10 = signal_rever(df=df, ticker=ticker, signal_name='sg_RSI_10', start=start, end=end)
     sg_RSI_50 = signal_rever(df=df, ticker=ticker, signal_name='sg_RSI_50', start=start, end=end)
-    # Run all backtests and plot the resutls
-    bt_results = bt.run(benchmark, sg_AboveSMA_10, sg_AboveSMA_50, sg_RSI_10, sg_RSI_50)
+    sg_BB_10 = signal_rever(df=df, ticker=ticker, signal_name='sg_BB_10', start=start, end=end)
+    sg_BB_50 = signal_rever(df=df, ticker=ticker, signal_name='sg_BB_50', start=start, end=end)
+    bt_results = bt.run(benchmark, sg_SMA_Cross, sg_EMA_Cross, sg_RSI_10, sg_RSI_50, sg_BB_10, sg_BB_50)
     return bt_results #.plot(title='Strategies for {}'.format(ticker))
 
 stats_to_display = ['total_return', 'cagr', 'max_drawdown', 'calmar',
