@@ -1,15 +1,17 @@
 from operator import index
-import dash
-import dash_bootstrap_components as dbc
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output
-import plotly.graph_objects as go
-import plotly.express as px
 import pandas as pd
 import numpy as np
 import datetime
 import chewie_pack
+
+import dash
+import dash_bootstrap_components as dbc
+from dash import dcc
+from dash import html
+import dash_daq as daq
+from dash.dependencies import Input, Output
+import plotly.graph_objects as go
+import plotly.express as px
 from dash.dash_table import DataTable, FormatTemplate
 import warnings
 warnings.filterwarnings('ignore')
@@ -114,7 +116,12 @@ app.layout = html.Div(children=[
         ], style=SIDEBAR_STYLE)#{'color':'black','background-color':'black','border':'0px dotted yellow'})
     ])
     ,html.Div(children=[
-        dcc.Graph(id='graph_strategy')
+#        for strategy in chewie_pack.strategies:
+            daq.Gauge(id='gauge_sg1', label='Buy and Hold', value=0, min=-5, max=5, showCurrentValue=True#, units='x'
+                #,color={"gradient":True,"ranges":{"green":[0,5],"red":[-5,0]}}
+        )
+        ,html.Br()
+        ,dcc.Graph(id='graph_strategy')
         ,html.Br()
         ,DataTable(
             id = 'datatable_signals',
@@ -227,11 +234,12 @@ def update_table(ticker_dropdown):
     df_copy = df_copy[df_copy['ticker']==ticker_dropdown].sort_index(ascending=False).reset_index()[['Date','Close'] + chewie_pack.indicators]
     #df_copy['Date'] = datetime.date(df_copy['Date'])
     return df_copy.to_dict('records')
-    
+
 
 @app.callback(
-    Output('graph_strategy','figure'),
+    Output('graph_strategy', 'figure'),
     Output('datatable_strategies_stats', 'data'),
+    Output('gauge_sg1', 'value'),
     [Input('dropdown_ticker', 'value'),
     Input("date_picker", 'start_date'),
     Input("date_picker", 'end_date')
@@ -256,7 +264,8 @@ def update_strategy(ticker, start, end):
             ,title=''
         ))
     table_stats = bt_results.stats.loc[chewie_pack.stats_to_display].astype(float).round(2).reset_index().rename(columns={'index':'Stat'})
-    return fig_strategies, table_stats.to_dict('records')
+    gauge = bt_results.stats.loc['total_return']['Buy_and_Hold']
+    return fig_strategies, table_stats.to_dict('records'), gauge
 
 
 if __name__ == '__main__':
