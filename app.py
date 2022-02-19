@@ -10,6 +10,7 @@ from dash import dcc
 from dash import html
 import dash_daq as daq
 from dash.dependencies import Input, Output
+import plotly
 import plotly.graph_objects as go
 import plotly.express as px
 from dash.dash_table import DataTable, FormatTemplate
@@ -170,8 +171,8 @@ app.layout = html.Div(children=[
             style_data = {'color':'white','backgroundColor':'black', 'border':'0.2px solid grey' }
         )
         ,html.Br()
-        ,dcc.Graph(id="graph_pct_change")
-        ,html.Br()
+        #,dcc.Graph(id="graph_pct_change")
+        #,html.Br()
         ,dcc.Graph(id="graph_candle")
     ], style={'background-color':'black', 'padding':'0px','margin':'0px 0px 0px 18rem'}) #style={'display':'inline-block', 'padding':'10px','width': '85%'})
 ], style={'background-color':'black', 'padding':'10px','margin':'0px'})
@@ -181,7 +182,7 @@ app.layout = html.Div(children=[
 
 @app.callback(
     Output('graph_candle', 'figure'), 
-    Output('graph_pct_change', 'figure'),
+    #Output('graph_pct_change', 'figure'),
     [Input('rangeslider_toggle', 'value'),
     Input('dropdown_ticker', 'value'),
     Input('date_picker', 'start_date'),
@@ -195,12 +196,15 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
     df_plot = df.loc[date_1:date_2]
     df_plot = df_plot[df_plot['ticker']==ticker_dropdown]
     
-    fig_candle = go.Figure(go.Candlestick(
-        x = df_plot.index,
-        open = df_plot.Open,
-        high = df_plot.High,
-        low = df_plot.Low,
-        close = df_plot.Close
+    fig_candle = go.Figure()
+    fig_candle = plotly.subplots.make_subplots(rows=4, cols=1, shared_xaxes=True, vertical_spacing=0.01, row_heights=[0.7,0.10,0.10,0.10])
+    fig_candle.add_trace(go.Candlestick(
+        x = df_plot.index
+        ,open = df_plot.Open
+        ,high = df_plot.High
+        ,low = df_plot.Low
+        ,close = df_plot.Close
+        ,name='OHLC'
     ))
     fig_candle.update_layout(
         title = '<b>{}</b> historic OHLC'.format(ticker_dropdown)
@@ -208,22 +212,69 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
         ,xaxis_rangeslider_visible=False
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
-        ,font = {'color':'orange'}
+        ,font = {'color':'grey'}
         ,xaxis = {'showgrid':False,'title':None}
-        ,yaxis={'showgrid':True,'gridcolor':'darkgrey'}
+        ,yaxis={'showgrid':True,'gridcolor':'rgb(50, 50, 50)','gridwidth':1,'zeroline':False}
+        ,legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.07,#1.02,
+            xanchor="right",
+            x=1
+            ,font={'color':'white'}
+            ,title='')
+        ,height=800
     )
+    # Add Moving Average Trace
+    fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['SMA_10'], opacity=0.7, line=dict(color='yellow', width=2), name='SMA_10'))
+    fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['SMA_50'], opacity=0.7, line=dict(color='orange', width=1), name='SMA_50'))
+    # Add Bolinger Bands (BB) Trace
+    fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['BB_10_upper'], opacity=0.7, line=dict(color='grey', width=2), name='BB_10_upper'))
+    fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['BB_10_lower'], opacity=0.7, line=dict(color='grey', width=2), name='BB_10_lower'))
+    fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['BB_50_upper'], opacity=0.7, line=dict(color='darkblue', width=2), name='BB_50_upper'))
+    fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['BB_50_lower'], opacity=0.7, line=dict(color='darkblue', width=2), name='BB_50_lower'))
+    
+    # Add Row VOLUME
+    #colors = ['green' if row['Open'] - row['Close'] >= 0 else 'red' for index, row in df_plot.iterrows()]
+    colors=np.where(df_plot['pct_change']<0, 'red', 'green')
+    fig_candle.add_trace(go.Bar(
+        x=df_plot.index
+        ,y=df_plot['Volume']
+        ,marker_color=colors
+        ,marker_line_width=0
+        ,opacity=0.8
+        ,name='Volume'
+        ), row=2, col=1
+    )
+    fig_candle.update_layout(yaxis2={'showgrid':True,'gridcolor':'rgb(50, 50, 50)','gridwidth':0.1,'title':None,'zeroline':False})
 
-    fig_pct_change = px.line(df_plot, y='pct_change')
-    fig_pct_change.update_layout(
-        title = '<b>{}</b> historic Pct Change'.format(ticker_dropdown)
-#        ,xaxis_rangeslider_visible ='slider' in value_range_slider
-        ,plot_bgcolor ='black'
-        ,paper_bgcolor = 'black'
-        ,font={'color':'orange'}
-        ,xaxis={'showgrid':False,'title':None}
-        ,yaxis={'showgrid':True,'gridcolor':'darkgrey','title':None}
-        )
-    return fig_candle, fig_pct_change
+    # Add Row PCT_CHANGE
+    fig_candle.add_trace(go.Bar(
+        x=df_plot.index
+        ,y=df_plot['pct_change'] 
+        ,marker_color=np.where(df_plot['pct_change']<0, 'red', 'green')
+        #,marker_line_color=np.where(df_plot['pct_change']<0, 'red', 'green')
+        ,marker_line_width=0
+        ,opacity=0.8
+        ,name='pct_change'
+        ), row=3, col=1
+    )
+    fig_candle.update_layout(yaxis3={'showgrid':True,'gridcolor':'rgb(50, 50, 50)','gridwidth':0.1,'title':None,'zeroline':False})
+
+    # Add Row RSI
+    fig_candle.add_trace(go.Bar(
+        x=df_plot.index
+        ,y=df_plot['RSI_10'] 
+        ,marker_color=np.where(df_plot['pct_change']<0, 'red', 'green')
+        #,marker_line_color=np.where(df_plot['pct_change']<0, 'red', 'green')
+        ,marker_line_width=0
+        ,opacity=0.8
+        ,name='RSI_10'
+        ), row=4, col=1
+    )
+    fig_candle.update_layout(yaxis4={'showgrid':True,'gridcolor':'rgb(50, 50, 50)','gridwidth':0.1,'title':None,'zeroline':False})
+
+    return fig_candle#, fig_pct_change
 
 
 @app.callback(
@@ -251,7 +302,7 @@ def update_strategy(ticker, start, end):
         title = '<b>{}</b> Backtesting Strategies'.format(ticker)
         ,plot_bgcolor ='black'
         ,paper_bgcolor = 'black'
-        ,font={'color':'orange'}
+        ,font={'color':'grey'}
         ,xaxis={'showgrid':False,'gridcolor':'red','title':None}
         ,yaxis={'showgrid':True,'gridcolor':'darkgrey','title':None}
         ,legend=dict(
