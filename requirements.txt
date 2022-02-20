@@ -52,3 +52,4 @@ dash-bootstrap-components==1.0.3
 dash-daq
 SQLAlchemy==1.4.29
 bt==0.2.9
+openpyxl==3.0.9

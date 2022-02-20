@@ -99,14 +99,16 @@ app.layout = html.Div(children=[
             )
             ,html.Br()
             ,html.Br()
-            ,dcc.Checklist(
-                id='rangeslider_toggle',
-                options=[{'label': 'Include Rangeslider', 
-                        'value': 'slider'}],
-                value=['slider'], style={'color':'white'}
-            )
+            #,dcc.Checklist(id='rangeslider_toggle', options=[{'label':'Include Rangeslider', 'value':'slider'}], value=['slider'], style={'color':'white'})
             ,html.Br()
-            #,html.P(["Report updated:", html.Br(), today], style={
+            
+            ,html.Button("Download CSV", id="btn_csv", style={"width": "100%",'padding':0})
+            ,dcc.Download(id="download-dataframe-csv")            
+            ,html.Br()
+            ,html.Br()
+            ,html.Button("Download Excel", id="btn_xlsx", style={"width": "100%",'padding':0})
+            ,dcc.Download(id="download-dataframe-xlsx")            
+            
             ,html.P(["Report updated: ", today], style={
                 'color':'grey'
                 #,'text-align':'bottom'
@@ -132,7 +134,7 @@ app.layout = html.Div(children=[
             sort_action = 'native',
             page_action = 'native',
             page_current = 0,
-            page_size = 15,
+            page_size = 10,
             style_header={'fontWeight':'bold', 'backgroundColor':'light-grey'},
             style_data = {'color':'grey','backgroundColor':'black', 'border':'0px' },
             style_data_conditional=(
@@ -178,26 +180,58 @@ app.layout = html.Div(children=[
 ], style={'background-color':'black', 'padding':'10px','margin':'0px'})
 
 
+#######################################################################################################################
 # CALLBACKs section
+
+@app.callback(
+    Output("download-dataframe-csv", "data"),
+    [Input("btn_csv", "n_clicks"),
+    Input('dropdown_ticker', 'value'),
+    Input('date_picker', 'start_date'),
+    Input('date_picker', 'end_date')]
+    ,prevent_initial_call=True
+)
+def func(n_clicks, ticker_dropdown, date_1, date_2):
+    df_download = df.copy(deep=True)
+    df_download = df_download.loc[date_1:date_2]
+    df_download = df_download[df_download['ticker']==ticker_dropdown]
+    return dcc.send_data_frame(df_download.to_csv, "download.csv")
+
+@app.callback(
+    Output("download-dataframe-xlsx", "data"),
+    [Input("btn_xlsx", "n_clicks"),
+    Input('dropdown_ticker', 'value'),
+    Input('date_picker', 'start_date'),
+    Input('date_picker', 'end_date')]
+    ,prevent_initial_call=True
+)
+def func(n_clicks, ticker_dropdown, date_1, date_2):
+    df_download = df.copy(deep=True)
+    df_download = df_download.loc[date_1:date_2]
+    df_download = df_download[df_download['ticker']==ticker_dropdown]
+    return dcc.send_data_frame(df_download.to_excel, "download.xlsx", sheet_name="RAW")
+
 
 @app.callback(
     Output('graph_candle', 'figure'), 
     #Output('graph_pct_change', 'figure'),
-    [Input('rangeslider_toggle', 'value'),
+    [
+    #Input('rangeslider_toggle', 'value'),
     Input('dropdown_ticker', 'value'),
     Input('date_picker', 'start_date'),
     Input('date_picker', 'end_date')
     ])
-def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
+#def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
+def display_candlestick(ticker_dropdown, date_1, date_2):
     df_plot = df.copy(deep=True)
     #if end_date == None:
     #    end_date = old_today
     #df_plot = df.loc[np.logical_and((df.index.date > date_1), (df.index.date < date_2))]
-    df_plot = df.loc[date_1:date_2]
+    df_plot = df_plot.loc[date_1:date_2]
     df_plot = df_plot[df_plot['ticker']==ticker_dropdown]
     
     fig_candle = go.Figure()
-    fig_candle = plotly.subplots.make_subplots(rows=4, cols=1, shared_xaxes=True, vertical_spacing=0.01, row_heights=[0.7,0.10,0.10,0.10])
+    fig_candle = plotly.subplots.make_subplots(rows=4, cols=1, shared_xaxes=True, vertical_spacing=0.01, row_heights=[0.7,0.10,0.15,0.10])
     fig_candle.add_trace(go.Candlestick(
         x = df_plot.index
         ,open = df_plot.Open
@@ -207,7 +241,7 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
         ,name='OHLC'
     ))
     fig_candle.update_layout(
-        title = '<b>{}</b> historic OHLC'.format(ticker_dropdown)
+        title = '<b>{}</b>'.format(ticker_dropdown)
 #        ,xaxis_rangeslider_visible='slider' in value_range_slider
         ,xaxis_rangeslider_visible=False
         ,plot_bgcolor ='black'
@@ -221,9 +255,9 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
             y=1.07,#1.02,
             xanchor="right",
             x=1
-            ,font={'color':'white'}
+            ,font={'color':'grey'}
             ,title='')
-        ,height=800
+        ,height=900
     )
     # Add Moving Average Trace
     fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['SMA_10'], opacity=0.7, line=dict(color='yellow', width=2), name='SMA_10'))
@@ -265,16 +299,19 @@ def display_candlestick(value_range_slider, ticker_dropdown, date_1, date_2):
     fig_candle.add_trace(go.Bar(
         x=df_plot.index
         ,y=df_plot['RSI_10'] 
-        ,marker_color=np.where(df_plot['pct_change']<0, 'red', 'green')
+        ,marker_color='blue'
+        #,marker_color=np.where(df_plot['pct_change']<0, 'red', 'green')
         #,marker_line_color=np.where(df_plot['pct_change']<0, 'red', 'green')
         ,marker_line_width=0
-        ,opacity=0.8
+        ,opacity=0.5
         ,name='RSI_10'
         ), row=4, col=1
     )
+    fig_candle.add_trace(go.Scatter(x=df_plot.index, y=df_plot['RSI_50'], opacity=0.9, line=dict(color='blueviolet', width=2), name='RSI_50'), row=4, col=1)
+
     fig_candle.update_layout(yaxis4={'showgrid':True,'gridcolor':'rgb(50, 50, 50)','gridwidth':0.1,'title':None,'zeroline':False})
 
-    return fig_candle#, fig_pct_change
+    return fig_candle #, df_plot, df_plot #, fig_pct_change
 
 
 @app.callback(
@@ -311,7 +348,7 @@ def update_strategy(ticker, start, end):
             y=1.07,#1.02,
             xanchor="right",
             x=1
-            ,font={'color':'white'}
+            ,font={'color':'grey'}
             ,title=''
         ))
     table_stats = bt_results.stats.loc[chewie_pack.stats_to_display].astype(float).round(2).reset_index().rename(columns={'index':'Stat'})
