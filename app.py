@@ -39,9 +39,20 @@ d_columns_stats = ['Stat']+chewie_pack.strategies
 d_columns_stats_dict = [{'id':x, 'name':x} for x in d_columns_stats]
 df_stats = pd.DataFrame(columns=d_columns_stats, index=chewie_pack.stats_to_display)
 
+# external JavaScript files
+external_scripts = [
+    'https://www.google-analytics.com/analytics.js',
+    {'src': 'https://cdn.polyfill.io/v2/polyfill.min.js'},
+    {
+        'src': 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.core.js',
+        'integrity': 'sha256-Qqd/EfdABZUcAxjOkMi8eGEivtdTkh3b65xCZL4qAQA=',
+        'crossorigin': 'anonymous'
+    }
+]
 
+# external CSS stylesheets
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets, external_scripts=external_scripts)
 app.title = 'Chewbacca'
 #app = dash.Dash(__name__)
 server = app.server
@@ -66,6 +77,7 @@ app.layout = html.Div(children=[
             html.Img(src=logo_link, style={
                 'margin':'0px'#'20px 10px 0px 10px' 
                 ,'height':'80px'
+                #,"width": "100%"
                 ,'padding':'10px 0px 10px 30px'
                 #,'text-align': 'center'
                 })
@@ -97,18 +109,27 @@ app.layout = html.Div(children=[
                 #,style={'margin':'10px'}
                 #,style={'margin':'0 auto','background-color':'lightgrey'}
             )
-            ,html.Br()
-            ,html.Br()
+            ,html.Br() ,html.Br()
             #,dcc.Checklist(id='rangeslider_toggle', options=[{'label':'Include Rangeslider', 'value':'slider'}], value=['slider'], style={'color':'white'})
-            ,html.Br()
+            #,html.Br()
             
             ,html.Button("Download CSV", id="btn_csv", style={"width": "100%",'padding':0})
             ,dcc.Download(id="download-dataframe-csv")            
-            ,html.Br()
-            ,html.Br()
+            ,html.Br() ,html.Br()
             ,html.Button("Download Excel", id="btn_xlsx", style={"width": "100%",'padding':0})
             ,dcc.Download(id="download-dataframe-xlsx")            
             
+            ,html.Br() ,html.Br()
+            ,html.A(
+                children=[html.Img(src='https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png', style={"width": "100%",'padding':0})]
+                ,href='https://www.buymeacoffee.com/s0juan', target="_blank"
+            ) 
+
+            ,html.A(
+                children=[html.Img(src='https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/assets/GitHub-Mark-Light-64px.png', style={"width": "100%",'padding':0})]
+                ,href='https://github.com/sjuanandres0/Chewbacca', target="_blank"
+            ) 
+
             ,html.P(["Report updated: ", today], style={
                 'color':'grey'
                 #,'text-align':'bottom'
