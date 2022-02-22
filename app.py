@@ -39,20 +39,9 @@ d_columns_stats = ['Stat']+chewie_pack.strategies
 d_columns_stats_dict = [{'id':x, 'name':x} for x in d_columns_stats]
 df_stats = pd.DataFrame(columns=d_columns_stats, index=chewie_pack.stats_to_display)
 
-# external JavaScript files
-external_scripts = [
-    'https://www.google-analytics.com/analytics.js',
-    {'src': 'https://cdn.polyfill.io/v2/polyfill.min.js'},
-    {
-        'src': 'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.core.js',
-        'integrity': 'sha256-Qqd/EfdABZUcAxjOkMi8eGEivtdTkh3b65xCZL4qAQA=',
-        'crossorigin': 'anonymous'
-    }
-]
-
 # external CSS stylesheets
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets, external_scripts=external_scripts)
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = 'Chewbacca'
 #app = dash.Dash(__name__)
 server = app.server
@@ -125,9 +114,12 @@ app.layout = html.Div(children=[
                 ,href='https://www.buymeacoffee.com/s0juan', target="_blank"
             ) 
 
+            ,html.Br(), html.Br()
             ,html.A(
-                children=[html.Img(src='https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/assets/GitHub-Mark-Light-64px.png', style={"width": "100%",'padding':0})]
-                ,href='https://github.com/sjuanandres0/Chewbacca', target="_blank"
+                children=[html.Img(src='https://raw.githubusercontent.com/sjuanandres0/Chewbacca/master/assets/GitHub-Mark-Light-32px.png')]
+                ,href='https://github.com/sjuanandres0/Chewbacca'
+                ,target="_blank"
+                ,style={'textAlign':'center'}
             ) 
 
             ,html.P(["Report updated: ", today], style={
