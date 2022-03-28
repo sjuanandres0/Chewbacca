@@ -6,8 +6,8 @@ import yfinance as yf
 import chewie_pack
 from datetime import datetime
 import talib
-from sqlalchemy import create_engine
-engine = create_engine('sqlite:///data.db')
+#from sqlalchemy import create_engine
+#engine = create_engine('sqlite:///data.db')
 
 start_tmsp = datetime.now()
 cnt = 0

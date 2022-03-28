@@ -19,7 +19,7 @@ strategies = ['Buy_and_Hold','sg_SMA_Cross','sg_EMA_Cross','sg_RSI_10','sg_RSI_5
 
 
 def BB_func(close, upper, lower):
-    '''Function to calculate if to buy, sell or hold'''
+    '''Function to calculate if to buy, sell or hold with Bolinger Bands'''
     if close<lower:
         return 'buy'
     elif close>upper:
@@ -39,6 +39,7 @@ def BHS_to_sg(BHS):
         return None
 
 def ADX_sg(value):
+    '''Maps the ADX to trend values'''
     if value<=25:
         return 'no_trend'
     elif value<50:

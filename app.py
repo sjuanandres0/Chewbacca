@@ -133,11 +133,9 @@ app.layout = html.Div(children=[
     ])
     ,html.Div(children=[
 #        for strategy in chewie_pack.strategies:
-            daq.Gauge(id='gauge_sg1', label='Buy and Hold', value=0, min=-5, max=5, showCurrentValue=True#, units='x'
-                #,color={"gradient":True,"ranges":{"green":[0,5],"red":[-5,0]}}
-        )
-        ,html.Br()
-        ,dcc.Graph(id='graph_strategy')
+        #,html.Br()
+        #,
+        dcc.Graph(id='graph_strategy')
         ,html.Br()
         ,DataTable(
             id = 'datatable_signals',
@@ -189,6 +187,10 @@ app.layout = html.Div(children=[
         #,dcc.Graph(id="graph_pct_change")
         #,html.Br()
         ,dcc.Graph(id="graph_candle")
+        ,daq.Gauge(id='gauge_sg1', label='Buy and Hold', value=0, min=-5, max=5, showCurrentValue=True#, units='x'
+                #,color={"gradient":True,"ranges":{"green":[0,5],"red":[-5,0]}}
+        )
+        #,html.Img(src='https://alternative.me/crypto/fear-and-greed-index.png')# alt="Latest Crypto Fear & Greed Index')
     ], style={'background-color':'black', 'padding':'0px','margin':'0px 0px 0px 18rem'}) #style={'display':'inline-block', 'padding':'10px','width': '85%'})
 ], style={'background-color':'black', 'padding':'10px','margin':'0px'})
 
