@@ -57,7 +57,7 @@ jobs:
 #          echo %cd%
 #          pip install TA_Lib-0.4.19-cp39-cp39-win_amd64.whl
 
-#      - name: Install TA-Lib
+      - name: Install TA-Lib
         run: |
           cd .github/dependencies/
           tar -xzf ta-lib-0.4.0-src.tar.gz
