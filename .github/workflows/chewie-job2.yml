@@ -1,0 +1,87 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI - Chewie Job2
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ master ]
+  #pull_request:
+  #  branches: [ main ]
+  #schedule:
+  #  - cron: '0 9 * * *'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      #- name: Run a one-line script
+      #  run: echo "Hello World, I'm Chewie!"
+
+      # Runs a set of commands using the runners shell
+      #- name: Run a multi-line script
+      #  run: |
+      #    echo Add other actions to build,
+      #    echo test, and deploy your project.
+          
+      - name: Installing Python 3.9.4
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9 #install the python needed
+
+#      - name: Restore Dependencies from Cache
+#        uses: actions/cache@v2
+#        with:
+#          path: ~\AppData\Local\pip\Cache
+#          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+#          restore-keys: |
+#            ${{ runner.os }}-pip-
+
+#      - name: Install TA-Lib
+#        run: |
+#          python -m pip install --upgrade pip
+#          cd .github/dependencies/
+#          echo %cd%
+#          pip install TA_Lib-0.4.19-cp39-cp39-win_amd64.whl
+
+#      - name: Install TA-Lib
+        run: |
+          cd .github/dependencies/
+          tar -xzf ta-lib-0.4.0-src.tar.gz
+          cd ta-lib/
+          ./configure --prefix=/usr
+          make
+          sudo make install
+          
+      - name: Installing requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install TA-Lib
+
+      - name: Running test.py
+        env:
+          bot_id: ${{ secrets.BOT_ID }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          test_secret: ${{ secrets.TEST_SECRET }}
+        run: |
+          python test.py
+
+#      - name: Publishing results to GitHub
+#        uses: mikeal/publish-to-github-action@master
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          BRANCH_NAME: '' #optional defaults to master
