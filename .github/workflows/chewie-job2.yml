@@ -5,12 +5,12 @@ name: CI - Chewie Job2
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ master ]
+  #push:
+  #  branches: [ master ]
   #pull_request:
   #  branches: [ main ]
-  #schedule:
-  #  - cron: '0 9 * * *'
+  schedule:
+    - cron: '*/5 * * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -57,20 +57,20 @@ jobs:
 #          echo %cd%
 #          pip install TA_Lib-0.4.19-cp39-cp39-win_amd64.whl
 
-      - name: Install TA-Lib
-        run: |
-          cd .github/dependencies/
-          tar -xzf ta-lib-0.4.0-src.tar.gz
-          cd ta-lib/
-          ./configure --prefix=/usr
-          make
-          sudo make install
+#      - name: Install TA-Lib
+#        run: |
+#          cd .github/dependencies/
+#          tar -xzf ta-lib-0.4.0-src.tar.gz
+#          cd ta-lib/
+#          ./configure --prefix=/usr
+#          make
+#          sudo make install
           
-      - name: Installing requirements
+      - name: Installing requirements2
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install TA-Lib
+          pip install -r requirements2.txt
+#          pip install TA-Lib
 
       - name: Running test.py
         env:
@@ -80,8 +80,8 @@ jobs:
         run: |
           python test.py
 
-#      - name: Publishing results to GitHub
-#        uses: mikeal/publish-to-github-action@master
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          BRANCH_NAME: '' #optional defaults to master
+      - name: Publishing results to GitHub
+        uses: mikeal/publish-to-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: '' #optional defaults to master

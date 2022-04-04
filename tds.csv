@@ -1,1 +1,2 @@
-ticker,strategy,tmstp_in,price_in,qty_in,rsi_in,tmstp_out,price_out,qty_out,rsi_out,pl
+ticker,strategy,tmstp_in,price_in,qty_in,rsi_in,cond2,tmstp_out,price_out,qty_out,rsi_out,pl
+BTC-USD,cb1,2022-04-04 06:59:00+00:00,46218.29296875,100,58.04703736021151,0,,,,,
