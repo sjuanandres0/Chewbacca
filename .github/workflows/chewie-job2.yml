@@ -9,8 +9,8 @@ on:
   #  branches: [ master ]
   #pull_request:
   #  branches: [ main ]
-  #schedule:
-  #  - cron: '*/5 * * * *'
+  schedule:
+    - cron: '*/5 * * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -72,13 +72,13 @@ jobs:
           pip install -r requirements2.txt
 #          pip install TA-Lib
 
-      - name: Running test.py
+      - name: Running job2.py
         env:
           bot_id: ${{ secrets.BOT_ID }}
           chat_id: ${{ secrets.CHAT_ID }}
           test_secret: ${{ secrets.TEST_SECRET }}
         run: |
-          python test.py
+          python job2.py
 
       - name: Publishing results to GitHub
         uses: mikeal/publish-to-github-action@master
