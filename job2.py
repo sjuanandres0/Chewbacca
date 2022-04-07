@@ -97,7 +97,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
-            message = 'SELL {} at {} RSI {}\nResult/PL {}'.format(ticker, round(price_now,2), round(rsi_now,2), round(pl,4))
+            message = 'SELL {} at {} RSI {}\n Result/PL {}'.format(ticker, round(price_now,2), round(rsi_now,2), round(pl,4))
             api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
             requests.get(api_url)
 
