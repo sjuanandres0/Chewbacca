@@ -66,10 +66,10 @@ jobs:
 #          make
 #          sudo make install
           
-      - name: Installing requirements2
+      - name: Installing requirements3
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements2.txt
+          pip install -r requirements3.txt
 #          pip install TA-Lib
 
       - name: Running job2.py
