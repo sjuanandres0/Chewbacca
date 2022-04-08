@@ -1,4 +1,4 @@
-#import time
+import time
 import os
 import pandas as pd
 import numpy as np
@@ -16,8 +16,8 @@ if bot_id == None:
     bot_id = cred.bot_id
     chat_id = cred.chat_id
     machine = 'laptop'
-message = 'Start {}'.format(start_tmsp)
-api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
+#message = 'Start {}'.format(start_tmsp)
+#api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
 #requests.get(api_url)
 
 def rsi(df, close_name, periods = 14, ema = True):
@@ -74,7 +74,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
                 new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan]
                 tds.loc[len(tds)] = new_row
                 print('buy2 fg1:{} fg2:{} cond2:{} rsi_now:{} price_now:{}'.format(fg1,fg2,cond2,rsi_now,price_now))
-                message = 'BUY {} at {} RSI {}'.format(ticker, round(price_now,2), round(rsi_now,2))
+                message = 'BUY {} (str{}) at {} RSI {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2))
                 api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
                 requests.get(api_url)
                 fg2 = 1
@@ -97,50 +97,50 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
-            message = 'SELL {} at {} RSI {}\n Result/PL {}'.format(ticker, round(price_now,2), round(rsi_now,2), round(pl,4))
+            message = 'SELL {} (str{}) at {} RSI {}\n Result/PL {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2), round(pl,4))
             api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
             requests.get(api_url)
 
     #tds.to_csv('tds.csv', index=False)
     return tds
 
-#while True:
-for ticker in tickers:
-    print('TICKER:{}'.format(ticker))
-    #testing_df=pd.read_csv('{}_5m_60d_20220406.csv'.format(ticker),index_col='Datetime')
-    df = yf.download(tickers=ticker, period='1d', interval='5m')
+while True:
+    for ticker in tickers:
+        print('TICKER:{}'.format(ticker))
+        #testing_df=pd.read_csv('{}_5m_60d_20220406.csv'.format(ticker),index_col='Datetime')
+        df = yf.download(tickers=ticker, period='1d', interval='5m')
 
-    for i in range(len(strategy_m)):
-        strategy = strategy_m[i]
-        thresh_rsi_in = thresh_rsi_in_m[i]
-        thresh_rsi_cond2 = thresh_rsi_cond2_m[i]
-        thresh_tp = thresh_tp_m[i]
-        thresh_sl = thresh_sl_m[i]
+        for i in range(len(strategy_m)):
+            strategy = strategy_m[i]
+            thresh_rsi_in = thresh_rsi_in_m[i]
+            thresh_rsi_cond2 = thresh_rsi_cond2_m[i]
+            thresh_tp = thresh_tp_m[i]
+            thresh_sl = thresh_sl_m[i]
 
-        #testing_df=pd.read_csv('BTC-USD_5m_60d_20220404',index_col='Datetime')
-        #for row in range(25,len(testing_df)):
-            #print('row: ',row)
-        #    df=testing_df.iloc[0:row]
+            #testing_df=pd.read_csv('BTC-USD_5m_60d_20220404',index_col='Datetime')
+            #for row in range(25,len(testing_df)):
+                #print('row: ',row)
+            #    df=testing_df.iloc[0:row]
 
-            #tds = pd.read_csv('tds.csv') 
-            #tickers = ['BTC-USD','ETH-USD']#,'ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
-            #ticker = 'BTC-USD'
+                #tds = pd.read_csv('tds.csv') 
+                #tickers = ['BTC-USD','ETH-USD']#,'ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
+                #ticker = 'BTC-USD'
 
-        tds = custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh_tp, thresh_sl, qty_in)
+            tds = custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh_tp, thresh_sl, qty_in)
 
 
-    #time.sleep(5)#300)
-    #end_tmsp = datetime.now()
-    #elapsed_sec = (end_tmsp - start_tmsp).seconds
+    time.sleep(300) #Sleep for 5 minutes.
+    end_tmsp = datetime.now()
+    elapsed_sec = (end_tmsp - start_tmsp).seconds
     #print('elapsed_sec {} for {} - {}'.format(elapsed_sec,ticker,end_tmsp))
 
-end_tmsp = datetime.now()
-elapsed_sec = (end_tmsp - start_tmsp).seconds
-print('elapsed_sec {} for {} tickers - {}'.format(elapsed_sec,len(tickers),end_tmsp))
-
     #tds.to_csv('tds.csv', index=False)
-    #if elapsed_sec>30:#3600:
-    #    break
+    if elapsed_sec>18000: #break every 5 hours (18000 seconds) #30:#3600:
+        break
+
+#end_tmsp = datetime.now()
+#elapsed_sec = (end_tmsp - start_tmsp).seconds
+print('elapsed_sec {} for {} tickers - {}'.format(elapsed_sec,len(tickers),end_tmsp))
 
 tds.to_csv('tds.csv', index=False)
 
