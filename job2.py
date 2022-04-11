@@ -42,7 +42,7 @@ def rsi(df, close_name, periods = 14, ema = True):
 
 #Setup
 tds = pd.read_csv('tds.csv') 
-tickers = ['BTC-USD','ETH-USD','ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
+tickers = ['BTC-USD','ETH-USD','ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD','AAPL','TSLA','AMZN','AMD','TWTR','MELI','NKE','COIN']
 strategy_m = ['cb1','cb2','cb3']
 thresh_rsi_in_m = [25, 20, 17]
 thresh_rsi_cond2_m = [30, 30, 30]
