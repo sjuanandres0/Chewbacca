@@ -6,9 +6,9 @@ name: CI - Chewie Job2
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ master ]
+    #branches: [ master ]
     path:
-      - 'tds.csv'
+      - '**/tds.csv'
   #pull_request:
   #  branches: [ main ]
   #schedule:
