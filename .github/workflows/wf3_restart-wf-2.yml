@@ -1,0 +1,15 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI - Chewie Workflow 3 - Start Workflow 2
+
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ["CI - Chewie WorkFlow 2 - Trade"]
+    types:
+      - completed
+
+
+jobs:
+  call-workflow-2-in-local-repo:
+    uses: ./.github/workflows/wf2_trade.yml
