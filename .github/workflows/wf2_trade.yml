@@ -76,6 +76,7 @@ jobs:
 #          pip install TA-Lib
 
   job2_1:
+    runs-on: ubuntu-latest
     steps:
       - name: Running job2.py
         env:
@@ -86,6 +87,7 @@ jobs:
           python job2.py
 
   publish_1:
+    runs-on: ubuntu-latest
     steps:
       - name: Publishing results to GitHub
         uses: mikeal/publish-to-github-action@master
@@ -94,6 +96,7 @@ jobs:
           BRANCH_NAME: '' #optional defaults to master
 
   job2_2:
+    runs-on: ubuntu-latest
     steps:
       - name: Running job2.py
         env:
@@ -104,6 +107,7 @@ jobs:
           python job2.py
 
   publish_2:
+    runs-on: ubuntu-latest
     steps:
       - name: Publishing results to GitHub
         uses: mikeal/publish-to-github-action@master
