@@ -76,33 +76,37 @@ jobs:
 #          pip install TA-Lib
 
   job2_1:
-    - name: Running job2.py
-      env:
-        bot_id: ${{ secrets.BOT_ID }}
-        chat_id: ${{ secrets.CHAT_ID }}
-        test_secret: ${{ secrets.TEST_SECRET }}
-      run: |
-        python job2.py
+    steps:
+      - name: Running job2.py
+        env:
+          bot_id: ${{ secrets.BOT_ID }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          test_secret: ${{ secrets.TEST_SECRET }}
+        run: |
+          python job2.py
 
   publish_1:
-    - name: Publishing results to GitHub
-      uses: mikeal/publish-to-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH_NAME: '' #optional defaults to master
+    steps:
+      - name: Publishing results to GitHub
+        uses: mikeal/publish-to-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: '' #optional defaults to master
 
   job2_2:
-    - name: Running job2.py
-      env:
-        bot_id: ${{ secrets.BOT_ID }}
-        chat_id: ${{ secrets.CHAT_ID }}
-        test_secret: ${{ secrets.TEST_SECRET }}
-      run: |
-        python job2.py
+    steps:
+      - name: Running job2.py
+        env:
+          bot_id: ${{ secrets.BOT_ID }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          test_secret: ${{ secrets.TEST_SECRET }}
+        run: |
+          python job2.py
 
   publish_2:
-    - name: Publishing results to GitHub
-      uses: mikeal/publish-to-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH_NAME: '' #optional defaults to master
+    steps:
+      - name: Publishing results to GitHub
+        uses: mikeal/publish-to-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: '' #optional defaults to master
