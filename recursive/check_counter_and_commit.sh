@@ -9,6 +9,7 @@ then
 else
     echo "Count okay... Continue";
     echo $(( $count + 1 )) > $COUNTER_FILE
+    git config http.sslVerify false
     git config --global user.email "sjuanandres0@gmail.com"
     git config --global user.name "sjuanandres0"
     git add $COUNTER_FILE
