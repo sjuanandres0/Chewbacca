@@ -130,7 +130,7 @@ while True:
                 tds = custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh_tp, thresh_sl, qty_in)
         
         except:
-            print("Download exception occurred.")
+            print("Download exception occurred for {} on {}.".format(ticker, datetime.now()))
 
 
     time.sleep(300) #Sleep for 5 minutes.
@@ -139,7 +139,7 @@ while True:
     #print('elapsed_sec {} for {} - {}'.format(elapsed_sec,ticker,end_tmsp))
 
     #tds.to_csv('tds.csv', index=False)
-    if elapsed_sec>18000: #break every 5 hours (18000 seconds) #30:#3600:
+    if elapsed_sec>120#>18000: #break every 5 hours (18000 seconds) #30:#3600:
         break
 
 #end_tmsp = datetime.now()
