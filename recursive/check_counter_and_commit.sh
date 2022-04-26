@@ -11,7 +11,7 @@ else
     echo $(( $count + 1 )) > $COUNTER_FILE
     git config --global user.email "sjuanandres0@gmail.com"
     git config --global user.name "sjuanandres0"
-    git add -A #$COUNTER_FILE
+    git add $COUNTER_FILE
     git commit -m "TDS updated"
     git push 
 fi; 
