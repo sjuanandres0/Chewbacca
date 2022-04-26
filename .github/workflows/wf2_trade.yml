@@ -51,8 +51,6 @@ jobs:
         run: |
           python job2.py
 
-      - name: Publishing results to GitHub
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_NAME: '' #optional defaults to master
+      - name: Update counter and commit
+        run: |
+          ./recursive/check_counter_and_commit.sh
