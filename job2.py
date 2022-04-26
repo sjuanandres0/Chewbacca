@@ -139,7 +139,7 @@ while True:
     #print('elapsed_sec {} for {} - {}'.format(elapsed_sec,ticker,end_tmsp))
 
     #tds.to_csv('tds.csv', index=False)
-    if elapsed_sec>120#>18000: #break every 5 hours (18000 seconds) #30:#3600:
+    if elapsed_sec>120:#>18000: #break every 5 hours (18000 seconds) #30:#3600:
         break
 
 #end_tmsp = datetime.now()
