@@ -102,7 +102,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
 
 for ticker in tickers:
     print('TICKER:{}'.format(ticker))
-    testing_df=pd.read_csv('{}_5m_60d_20220406.csv'.format(ticker),index_col='Datetime')
+    testing_df=pd.read_csv('drafts/5m_60d_{}.csv'.format(ticker),index_col='Datetime')
 
     for i in range(len(strategy_m)):
         strategy = strategy_m[i]
@@ -136,7 +136,7 @@ print('elapsed_sec {} for {} tickers - {}'.format(elapsed_sec,len(tickers),end_t
     #if elapsed_sec>30:#3600:
     #    break
 
-tds.to_csv('tds.csv', index=False)
+tds.to_csv('tds_backtested.csv', index=False)
 
 message = 'Ran {}\nElapsed {}secs\nEnd_tmsp {}'.format(machine, elapsed_sec, end_tmsp)
 api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)

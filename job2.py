@@ -16,9 +16,9 @@ if bot_id == None:
     bot_id = cred.bot_id
     chat_id = cred.chat_id
     machine = 'laptop'
-#message = 'Start {}'.format(start_tmsp)
-#api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
-#requests.get(api_url)
+message = 'Start {}'.format(start_tmsp)
+api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
+requests.get(api_url)
 
 def rsi(df, close_name, periods = 14, ema = True):
     '''
@@ -74,7 +74,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
                 new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan]
                 tds.loc[len(tds)] = new_row
                 print('buy2 fg1:{} fg2:{} cond2:{} rsi_now:{} price_now:{}'.format(fg1,fg2,cond2,rsi_now,price_now))
-                message = 'BUY {} (str{}) at {} RSI {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2))
+                message = 'BUY {} ({}) at {} RSI {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2))
                 api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
                 requests.get(api_url)
                 fg2 = 1
@@ -97,7 +97,8 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
-            message = 'SELL {} (str{}) at {} RSI {}\n Result/PL {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2), round(pl,4))
+            icon = ['🔴' if pl<0 else '🟢'][0]
+            message = 'SELL {} ({}) at {} RSI {}\nPL {} {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2), round(pl,4), icon)
             api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
             requests.get(api_url)
 
