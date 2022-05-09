@@ -112,29 +112,29 @@ while True:
     for ticker in tickers:
         print('TICKER:{}'.format(ticker))
         #testing_df=pd.read_csv('{}_5m_60d_20220406.csv'.format(ticker),index_col='Datetime')
-        #try:
-        df = yf.download(tickers=ticker, period='1d', interval='5m')
+        try:
+            df = yf.download(tickers=ticker, period='1d', interval='5m')
 
-        for i in range(len(strategy_m)):
-            strategy = strategy_m[i]
-            thresh_rsi_in = thresh_rsi_in_m[i]
-            thresh_rsi_cond2 = thresh_rsi_cond2_m[i]
-            thresh_tp = thresh_tp_m[i]
-            thresh_sl = thresh_sl_m[i]
+            for i in range(len(strategy_m)):
+                strategy = strategy_m[i]
+                thresh_rsi_in = thresh_rsi_in_m[i]
+                thresh_rsi_cond2 = thresh_rsi_cond2_m[i]
+                thresh_tp = thresh_tp_m[i]
+                thresh_sl = thresh_sl_m[i]
 
-            #testing_df=pd.read_csv('BTC-USD_5m_60d_20220404',index_col='Datetime')
-            #for row in range(25,len(testing_df)):
-                #print('row: ',row)
-            #    df=testing_df.iloc[0:row]
+                #testing_df=pd.read_csv('BTC-USD_5m_60d_20220404',index_col='Datetime')
+                #for row in range(25,len(testing_df)):
+                    #print('row: ',row)
+                #    df=testing_df.iloc[0:row]
 
-                #tds = pd.read_csv('tds.csv') 
-                #tickers = ['BTC-USD','ETH-USD']#,'ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
-                #ticker = 'BTC-USD'
+                    #tds = pd.read_csv('tds.csv') 
+                    #tickers = ['BTC-USD','ETH-USD']#,'ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
+                    #ticker = 'BTC-USD'
 
-            tds = custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh_tp, thresh_sl, qty_in)
-        
-        #except:
-        #    print("Download exception occurred for {} on {}.".format(ticker, datetime.now()))
+                tds = custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh_tp, thresh_sl, qty_in)
+            
+        except:
+            print("Download exception occurred for {} on {}.".format(ticker, datetime.now()))
 
 
     time.sleep(300) #Sleep for 5 minutes.
