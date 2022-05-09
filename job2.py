@@ -90,15 +90,18 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
         old_price_in = tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'price_in'].values[-1]
         delta = (price_now / old_price_in) - 1
         if ((delta>thresh_tp) | (delta<thresh_sl)): # SELL at TP/SL
-            print('Sell fg1:{} fg2:{} delta:{} rsi_now:{} price_now:{}'.format(fg1,fg2,delta,rsi_now,price_now))
+            print('{} Sell fg1:{} fg2:{} delta:{} rsi_now:{} price_now:{}'.format(ticker,fg1,fg2,delta,rsi_now,price_now))
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_out'] = df.index[-1]
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'price_out'] = price_now
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'qty_out'] = qty_in #1
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
+            tmstp_in = pd.to_datetime(tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_in'])
+            min_open = (df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60
+            tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'min_open'] = min_open
             icon = ['🔴' if pl<0 else '🟢'][0]
-            message = 'SELL {} ({}) at {} RSI {}\nPL {} {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2), round(pl,4), icon)
+            message = 'SELL {} ({}) at {} RSI {} min_open {}\nPL {} {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2), round(min_open,0), icon, round(pl,4))
             api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
             requests.get(api_url)
 
@@ -109,29 +112,29 @@ while True:
     for ticker in tickers:
         print('TICKER:{}'.format(ticker))
         #testing_df=pd.read_csv('{}_5m_60d_20220406.csv'.format(ticker),index_col='Datetime')
-        try:
-            df = yf.download(tickers=ticker, period='1d', interval='5m')
+        #try:
+        df = yf.download(tickers=ticker, period='1d', interval='5m')
 
-            for i in range(len(strategy_m)):
-                strategy = strategy_m[i]
-                thresh_rsi_in = thresh_rsi_in_m[i]
-                thresh_rsi_cond2 = thresh_rsi_cond2_m[i]
-                thresh_tp = thresh_tp_m[i]
-                thresh_sl = thresh_sl_m[i]
+        for i in range(len(strategy_m)):
+            strategy = strategy_m[i]
+            thresh_rsi_in = thresh_rsi_in_m[i]
+            thresh_rsi_cond2 = thresh_rsi_cond2_m[i]
+            thresh_tp = thresh_tp_m[i]
+            thresh_sl = thresh_sl_m[i]
 
-                #testing_df=pd.read_csv('BTC-USD_5m_60d_20220404',index_col='Datetime')
-                #for row in range(25,len(testing_df)):
-                    #print('row: ',row)
-                #    df=testing_df.iloc[0:row]
+            #testing_df=pd.read_csv('BTC-USD_5m_60d_20220404',index_col='Datetime')
+            #for row in range(25,len(testing_df)):
+                #print('row: ',row)
+            #    df=testing_df.iloc[0:row]
 
-                    #tds = pd.read_csv('tds.csv') 
-                    #tickers = ['BTC-USD','ETH-USD']#,'ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
-                    #ticker = 'BTC-USD'
+                #tds = pd.read_csv('tds.csv') 
+                #tickers = ['BTC-USD','ETH-USD']#,'ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
+                #ticker = 'BTC-USD'
 
-                tds = custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh_tp, thresh_sl, qty_in)
+            tds = custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh_tp, thresh_sl, qty_in)
         
-        except:
-            print("Download exception occurred for {} on {}.".format(ticker, datetime.now()))
+        #except:
+        #    print("Download exception occurred for {} on {}.".format(ticker, datetime.now()))
 
 
     time.sleep(300) #Sleep for 5 minutes.
