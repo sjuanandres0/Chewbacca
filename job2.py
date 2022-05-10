@@ -98,7 +98,8 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
-            min_open = (df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60
+            min_open = ((df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60).values[0]
+            print(min_open)
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'min_open'] = min_open
             icon = ['🔴' if pl<0 else '🟢'][0]
             message = 'SELL {} ({}) at {} RSI {} min_open {}\nPL {} {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2), round(min_open,0), icon, round(pl,4))
