@@ -67,13 +67,13 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
         if fg1==0: #BUY 1st time / Open first position
             new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan]
             tds.loc[len(tds)] = new_row
-            print('buy1 fg1:{} fg2:{} rsi_now:{} price_now:{}'.format(fg1,fg2,rsi_now,price_now))
+            print('{} Buy1 fg1:{} fg2:{} rsi_now:{} price_now:{}'.format(ticker,fg1,fg2,rsi_now,price_now))
         elif fg2==0: #BUY AFTER 1st time / Open subsequent positions
             cond2 = tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy), 'cond2'].values[-1]
             if cond2>0:
                 new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan]
                 tds.loc[len(tds)] = new_row
-                print('buy2 fg1:{} fg2:{} cond2:{} rsi_now:{} price_now:{}'.format(fg1,fg2,cond2,rsi_now,price_now))
+                print('{} Buy2 fg1:{} fg2:{} cond2:{} rsi_now:{} price_now:{}'.format(ticker,fg1,fg2,cond2,rsi_now,price_now))
                 message = 'BUY {} ({}) at {} RSI {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2))
                 api_url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}&parse_mode=HTML'.format(bot_id, chat_id, message)
                 requests.get(api_url)
@@ -90,14 +90,14 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
         old_price_in = tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'price_in'].values[-1]
         delta = (price_now / old_price_in) - 1
         if ((delta>thresh_tp) | (delta<thresh_sl)): # SELL at TP/SL
-            print('{} Sell fg1:{} fg2:{} delta:{} rsi_now:{} price_now:{}'.format(ticker,fg1,fg2,delta,rsi_now,price_now))
+            print('{} SELL fg1:{} fg2:{} delta:{} rsi_now:{} price_now:{}'.format(ticker,fg1,fg2,delta,rsi_now,price_now))
+            tmstp_in = pd.to_datetime(tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_in'])
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_out'] = df.index[-1]
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'price_out'] = price_now
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'qty_out'] = qty_in #1
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
-            tmstp_in = pd.to_datetime(tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_in'])
             min_open = (df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'min_open'] = min_open
             icon = ['🔴' if pl<0 else '🟢'][0]
