@@ -42,12 +42,17 @@ def rsi(df, close_name, periods = 14, ema = True):
 
 #Setup
 tds = pd.read_csv('tds.csv') 
-tickers = ['BTC-USD','ETH-USD','ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD','AAPL','TSLA','AMZN','AMD','TWTR','MELI','NKE','COIN']
-strategy_m = ['cb1','cb2','cb3']
-thresh_rsi_in_m = [25, 20, 17]
-thresh_rsi_cond2_m = [30, 30, 30]
-thresh_tp_m = [0.009, 0.03, 0.1]
-thresh_sl_m = [-0.049, -0.049, -0.049]
+tickers = ['BTC-USD','ETH-USD','ADA-USD','SOL-USD','DOT-USD','AVAX-USD','AAPL','TSLA','AMZN','AMD','TWTR','MELI','NKE','COIN'] #'LUNA1-USD',
+# strategy_m = ['cb1','cb2','cb3']
+# thresh_rsi_in_m = [25, 20, 17]
+# # thresh_rsi_cond2_m = [30, 30, 30]
+# thresh_tp_m = [0.009, 0.03, 0.1]
+# thresh_sl_m = [-0.049, -0.049, -0.049]
+strategy_m = ['cb1','cb2','cb3','cb4']
+thresh_rsi_in_m = [22, 15, 10, 7]
+thresh_rsi_cond2_m = [30, 30, 30, 25]
+thresh_tp_m = [0.009, 0.03, 0.05, 0.08]
+thresh_sl_m = [-0.049, -0.049, -0.049, -0.049]
 #ticker = 'BTC-USD'
 #strategy='cb1'
 #thresh_rsi_in=25
@@ -137,7 +142,7 @@ while True:
         except:
             print("Download exception occurred for {} on {}.".format(ticker, datetime.now()))
 
-
+    print('Sleeping for 5 min... zZzZ')
     time.sleep(300) #Sleep for 5 minutes.
     end_tmsp = datetime.now()
     elapsed_sec = (end_tmsp - start_tmsp).seconds
