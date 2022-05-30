@@ -45,12 +45,17 @@ def rsi(df, close_name, periods = 14, ema = True):
 
 #Setup
 tds = pd.read_csv('tds.csv') 
-tickers = ['BTC-USD','ETH-USD','ADA-USD','SOL-USD','LUNA1-USD','DOT-USD','AVAX-USD']
-strategy_m = ['cb1','cb2','cb3']
-thresh_rsi_in_m = [25, 20, 17]
-thresh_rsi_cond2_m = [30, 30, 30]
-thresh_tp_m = [0.009, 0.03, 0.1]
-thresh_sl_m = [-0.049, -0.049, -0.049]
+tickers = ['BTC-USD','ETH-USD','ADA-USD','SOL-USD','DOT-USD','AVAX-USD','AAPL','TSLA','AMZN','AMD','TWTR','MELI','NKE','COIN'] #'LUNA1-USD',
+# strategy_m = ['cb1','cb2','cb3']
+# thresh_rsi_in_m = [25, 20, 17]
+# # thresh_rsi_cond2_m = [30, 30, 30]
+# thresh_tp_m = [0.009, 0.03, 0.1]
+# thresh_sl_m = [-0.049, -0.049, -0.049]
+strategy_m = ['cb1','cb2','cb3','cb4']
+thresh_rsi_in_m = [22, 15, 10, 7]
+thresh_rsi_cond2_m = [30, 30, 30, 25]
+thresh_tp_m = [0.009, 0.03, 0.05, 0.08]
+thresh_sl_m = [-0.049, -0.049, -0.049, -0.049]
 #ticker = 'BTC-USD'
 #strategy='cb1'
 #thresh_rsi_in=25
@@ -68,7 +73,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
 
     if rsi_now<thresh_rsi_in:
         if fg1==0: #BUY 1st time / Open first position
-            new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan]
+            new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan,np.nan]
             tds.loc[len(tds)] = new_row
             print('{} buy1 fg1:{} fg2:{} rsi_now:{} price_now:{}'.format(row,fg1,fg2,rsi_now,price_now))
         elif fg2==0: #BUY AFTER 1st time / Open subsequent positions
@@ -95,7 +100,11 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'price_out'] = price_now
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'qty_out'] = qty_in #1
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
-            tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = ((price_now-old_price_in)/old_price_in)*qty_in
+            pl = ((price_now-old_price_in)/old_price_in)*qty_in
+            tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
+            min_open = ((df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60).values[0]
+            print(min_open)
+            tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'min_open'] = min_open
 
     #tds.to_csv('tds.csv', index=False)
     return tds
