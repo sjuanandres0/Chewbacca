@@ -44,7 +44,10 @@ def rsi(df, close_name, periods = 14, ema = True):
 #    df = yf.download(tickers=ticker, period='1d', interval='5m')
 
 #Setup
-tds = pd.read_csv('tds.csv') 
+# tds = pd.read_csv('tds.csv') 
+tds = pd.read_csv('tds.csv')
+tds = tds.iloc[0:1]
+# tds.head()
 tickers = ['BTC-USD','ETH-USD','ADA-USD','SOL-USD','DOT-USD','AVAX-USD','AAPL','TSLA','AMZN','AMD','TWTR','MELI','NKE','COIN'] #'LUNA1-USD',
 # strategy_m = ['cb1','cb2','cb3']
 # thresh_rsi_in_m = [25, 20, 17]
@@ -79,7 +82,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
         elif fg2==0: #BUY AFTER 1st time / Open subsequent positions
             cond2 = tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy), 'cond2'].values[-1]
             if cond2>0:
-                new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan]
+                new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan,np.nan]
                 tds.loc[len(tds)] = new_row
                 print('{} buy2 fg1:{} fg2:{} cond2:{} rsi_now:{} price_now:{}'.format(row,fg1,fg2,cond2,rsi_now,price_now))
                 fg2 = 1
@@ -96,12 +99,16 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
         delta = (price_now / old_price_in) - 1
         if ((delta>thresh_tp) | (delta<thresh_sl)): # SELL at TP/SL
             print('{} Sell fg1:{} fg2:{} delta:{} rsi_now:{} price_now:{}'.format(row,fg1,fg2,delta,rsi_now,price_now))
+
+            tmstp_in = pd.to_datetime(tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_in'])
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_out'] = df.index[-1]
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'price_out'] = price_now
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'qty_out'] = qty_in #1
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
+            print('DEBUG = df.index[-1] = {}'.format(df.index[-1]))
+            print('DEBUG = df.index[-1].to_pydatetime() = {}'.format(df.index[-1].to_pydatetime()))
             min_open = ((df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60).values[0]
             print(min_open)
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'min_open'] = min_open
@@ -112,6 +119,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
 for ticker in tickers:
     print('TICKER:{}'.format(ticker))
     testing_df=pd.read_csv('drafts/5m_60d_{}.csv'.format(ticker),index_col='Datetime')
+    testing_df.index = pd.to_datetime(testing_df.index)
 
     for i in range(len(strategy_m)):
         strategy = strategy_m[i]

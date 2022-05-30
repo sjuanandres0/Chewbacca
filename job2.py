@@ -76,7 +76,7 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
         elif fg2==0: #BUY AFTER 1st time / Open subsequent positions
             cond2 = tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy), 'cond2'].values[-1]
             if cond2>0:
-                new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan]
+                new_row=[ticker,strategy,df.index[-1],price_now,qty_in,rsi_now,0,np.nan,np.nan,np.nan,np.nan,np.nan,np.nan]
                 tds.loc[len(tds)] = new_row
                 print('{} Buy2 fg1:{} fg2:{} cond2:{} rsi_now:{} price_now:{}'.format(ticker,fg1,fg2,cond2,rsi_now,price_now))
                 message = 'BUY {} ({}) at {} RSI {}'.format(ticker, strategy, round(price_now,2), round(rsi_now,2))
