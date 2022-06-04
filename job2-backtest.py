@@ -100,18 +100,18 @@ def custom_st(tds, df, ticker, strategy, thresh_rsi_in, thresh_rsi_cond2, thresh
         if ((delta>thresh_tp) | (delta<thresh_sl)): # SELL at TP/SL
             print('{} Sell fg1:{} fg2:{} delta:{} rsi_now:{} price_now:{}'.format(row,fg1,fg2,delta,rsi_now,price_now))
 
-            tmstp_in = pd.to_datetime(tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_in'])
+            # tmstp_in = pd.to_datetime(tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_in'])
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'tmstp_out'] = df.index[-1]
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'price_out'] = price_now
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'qty_out'] = qty_in #1
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'rsi_out'] = rsi_now
             pl = ((price_now-old_price_in)/old_price_in)*qty_in
             tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'pl'] = pl
-            print('DEBUG = df.index[-1] = {}'.format(df.index[-1]))
-            print('DEBUG = df.index[-1].to_pydatetime() = {}'.format(df.index[-1].to_pydatetime()))
-            min_open = ((df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60).values[0]
-            print(min_open)
-            tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'min_open'] = min_open
+            # print('DEBUG = df.index[-1] = {}'.format(df.index[-1]))
+            # print('DEBUG = df.index[-1].to_pydatetime() = {}'.format(df.index[-1].to_pydatetime()))
+            # min_open = ((df.index[-1].to_pydatetime() - tmstp_in).dt.total_seconds()/60).values[0]
+            # print(min_open)
+            # tds.loc[(tds.ticker==ticker) & (tds.strategy==strategy) & (tds.pl.isnull()), 'min_open'] = min_open
 
     #tds.to_csv('tds.csv', index=False)
     return tds
